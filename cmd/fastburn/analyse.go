@@ -1,42 +1,27 @@
 package main
 
 /*
-fastburnt_cli command line tool to parse FastFind results
-
-BUILD
-
-  export GOPATH="$GOPATH:$(pwd)"
-
-  go get  "github.com/kjk/lzmadec"
-  go get "github.com/sirupsen/logrus"
-
-  go build fastburnt/cmd/fastburnt_cli
-
-RUN
-
-Attention: requires 7z binary in the path named as 7z (or 7z.exe on Windows)
-
-  ./fastburnt_cli <7z archive1 ... n>
+Supporting functions for fastburn command line tool
 
 **/
 
 import (
 	"fmt"
 
-	fastfound "dfir-orc/fastburnt/internal/fastfind"
-	"dfir-orc/fastburnt/internal/filter"
-	"dfir-orc/fastburnt/internal/utils"
+	fbn "fastburn/internal/fastfind"
+	"fastburn/internal/filter"
+	"fastburn/internal/utils"
 
 	log "github.com/sirupsen/logrus"
 )
 
 // parseFiles - process the command line to list files and parse them to the in-memory data structures
-func parseFiles(args []string) ([]string, *fastfound.FastFindMatchesList, *fastfound.FastFindComputersList, *fastfound.FastFindMatchesStats, error) {
+func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFindComputersList, *fbn.FastFindMatchesStats, error) {
 
-	matches := make(fastfound.FastFindMatchesList, 0)
-	computers := make(fastfound.FastFindComputersList, 0)
+	matches := make(fbn.FastFindMatchesList, 0)
+	computers := make(fbn.FastFindComputersList, 0)
 
-	stats := fastfound.CreateStats()
+	stats := fbn.CreateStats()
 	log.Debugf("Processing file list: %v", args)
 	files, err := utils.ExpandArchiveFilePaths(utils.Uniq(args))
 	if err != nil {
@@ -47,7 +32,7 @@ func parseFiles(args []string) ([]string, *fastfound.FastFindMatchesList, *fastf
 	log.Debug(fmt.Sprintf("Processing %d files", len(files)))
 
 	for _, fname := range files {
-		matches, computers, err = fastfound.ProcessFile(fname, matches, computers)
+		matches, computers, err = fbn.ProcessFile(fname, matches, computers)
 		if err != nil {
 			log.Warning("Failed to process '" + fname + "': " + err.Error())
 		} else {
@@ -65,11 +50,11 @@ func parseFiles(args []string) ([]string, *fastfound.FastFindMatchesList, *fastf
 }
 
 // analyseData - process the collected data in memory
-func analyseData(matches *fastfound.FastFindMatchesList, stats *fastfound.FastFindMatchesStats, postfilter *filter.Filter) (*fastfound.Timeline, error) {
+func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesStats, postfilter *filter.Filter) (*fbn.Timeline, error) {
 	log.Debug(fmt.Sprintf("Post-processing %v results", len(*matches)))
 	var blacklistCount uint64 = 0
 	var whitelistCount uint64 = 0
-	timeline := fastfound.InitTL()
+	timeline := fbn.InitTL()
 
 	// processing results: looking for sure matches
 	for _, m := range *matches {
@@ -111,13 +96,13 @@ func analyseData(matches *fastfound.FastFindMatchesList, stats *fastfound.FastFi
 // saveResults - export results to CSV files
 func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats_fname string, timeline_fname string,
 	files []string,
-	matches *fastfound.FastFindMatchesList, computers *fastfound.FastFindComputersList, stats *fastfound.FastFindMatchesStats, timeline *fastfound.Timeline,
+	matches *fbn.FastFindMatchesList, computers *fbn.FastFindComputersList, stats *fbn.FastFindMatchesStats, timeline *fbn.Timeline,
 	postfilter *filter.Filter) error {
 
 	// CSV export
 	log.Debug("Exporting results")
 
-	err := fastfound.ExportComputersToCSV(csv_computers_fname, computers)
+	err := fbn.ExportComputersToCSV(csv_computers_fname, computers)
 	if err != nil {
 		log.Warning("Export to '" + csv_computers_fname + "' failed: " + err.Error())
 	} else {
@@ -127,11 +112,11 @@ func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats
 	if len(*matches) > 0 {
 
 		// is infected ?
-		f := func(m *fastfound.FastFindMatch) (bool, string) {
+		f := func(m *fbn.FastFindMatch) (bool, string) {
 			return postfilter.IsWhitelisted(m)
 		}
 		// exporting
-		err = fastfound.ExportMatchesToCSV(csv_matches_fname, matches, f)
+		err = fbn.ExportMatchesToCSV(csv_matches_fname, matches, f)
 		if err != nil {
 			log.Warning("Export to '" + csv_matches_fname + "' failed: " + err.Error())
 		} else {
@@ -143,7 +128,7 @@ func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats
 	log.Infof("%d archives processed for %d computers, %d matches found", len(files), len(*computers), len(*matches))
 
 	// exporting stats
-	err = fastfound.ExportStatsToCSV(csv_stats_fname, stats)
+	err = fbn.ExportStatsToCSV(csv_stats_fname, stats)
 	if err != nil {
 		log.Warning("Stat report export to '" + csv_stats_fname + "' failed: " + err.Error())
 	} else {
@@ -152,7 +137,7 @@ func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats
 
 	// exporting timeline
 	if timeline_fname != "" {
-		fastfound.ExportTimelineToCSV(timeline_fname, timeline)
+		fbn.ExportTimelineToCSV(timeline_fname, timeline)
 		if err != nil {
 			log.Warning("Timeline export to '" + timeline_fname + "' failed: " + err.Error())
 		} else {

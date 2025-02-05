@@ -1,4 +1,4 @@
-# Utilisation de l'outil FastBurnt
+# Utilisation de l'outil FastBurn
 
 
 ## Fonctionnement
@@ -14,14 +14,14 @@ Chaque entrée peut aussi être comparée à :
 Au terme de l'exécution, un fichier CSV contenant le détail des données analysées est généré.
 
 Deux déclinaisons de l'outil d'ont fournies
-* `fastburnt_cli` est destiné à être utilisé en ligne de commande (Windows ou Linux) et génère les affichages sur les sorties standard. Le fichier CSV est automatiquement généré au terme de l'exécution.
-* `fastburnt_ui` permet une exécution via interface graphique. La liste des fichiers à traiter peut être éditée interactivement. L'export CSV est déclenché par un choix utilisateur.
+* `fbn` est destiné à être utilisé en ligne de commande (Windows ou Linux) et génère les affichages sur les sorties standard. Le fichier CSV est automatiquement généré au terme de l'exécution.
+* `fbn_ui` permet une exécution via interface graphique. La liste des fichiers à traiter peut être éditée interactivement. L'export CSV est déclenché par un choix utilisateur.
 
 
 ### Usage
 
 ```
-   ./fastburnt_cli [--debug|--trace] [--whitelist <whitelist.csv>] [--blacklist <blacklist.csv>] [-output <output file>] [-computers list.csv] <7zArchive1 ... n>
+   ./fbn [--debug|--trace] [--whitelist <whitelist.csv>] [--blacklist <blacklist.csv>] [-output <output file>] [-computers list.csv] <7zArchive1 ... n>
 ```
 
 
@@ -52,7 +52,7 @@ Le format des fichiers de liste blanches et noire est le même. Il est document�
 Exécution en ligne de commande sous Linux
 
 ```
- ./fastburnt_cli Resultats
+ ./fbn Resultats
   INFO[0000] File 'Resultats/ORC_WorkStation_DESKTOP-LCINJKL_FastFind.7z', Hostname DESKTOP-LCINJKL matches: 0
   INFO[0000] File 'Resultats/ORC_WorkStation_DESKTOP-LCINQGJ_FastFind.7z', Hostname DESKTOP-LCINQGJ matches: 4
   INFO[0000] File 'Resultats/ORC_WorkStation_DESKTOP-JKLNQGJ_FastFind.7z', Hostname DESKTOP-JKLNQGJ matches: 1
@@ -100,16 +100,16 @@ Il est conseillé de rediriger la sortie d'erreur vers un fichiers lorsque l'on 
 Exemple:
 ```
 
- ./fastburnt_cli Resultats
+ ./fbn Resultats
 
 # Sera lent si 'Resultats' est une arborescence contenant
 # beaucoup de fichiers de résultats.
 # Pour aller plus vite:
 
- ./fastburnt_cli -debug Resultats 2> fastburnt.log
+ ./fbn -debug Resultats 2> fastburn.log
 
 # et va générer les journaux d'exécution détaillés dans le
-# fichier 'fastburnt.log'
+# fichier 'fastburn.log'
 
 ```
 

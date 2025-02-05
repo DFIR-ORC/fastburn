@@ -1,4 +1,4 @@
-module dfir-orc/fastburnt
+module fastburn
 
 go 1.21
 

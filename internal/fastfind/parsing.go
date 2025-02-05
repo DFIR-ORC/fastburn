@@ -1,8 +1,8 @@
 package fastfind
 
 import (
-	"dfir-orc/fastburnt/internal/utils"
 	"encoding/json"
+	"fastburn/internal/utils"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"

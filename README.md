@@ -8,10 +8,10 @@ The program can read a series of archives resulting from a FastFind, display a s
 ## Build instructions
 ### Unix
 A Makefile can be used to manage compilations on most environments.
-Type `make` to generate the `fastburnt_cli` binary or use the 'go' command line.
+Type `make` to generate the `fbn` binary or use the 'go' command line.
 
 ```bash
-go build -v ./cmd/fastburnt_cli/  # output: fastburnt_cli
+go build -o fbn -v ./cmd/fastburn/  # output: fbn
 ```
 
 ### Windows
@@ -26,7 +26,7 @@ Use the new mingw64 environment and setup the toolchain
 pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-go
 export GOROOT=/mingw64/lib/go
 cd .../FastBurnt
-go build -v ./cmd/fastburnt_cli/  # output: .../FastBurnt/fastburnt_cli.exe
+go build -o fbn -v ./cmd/fastburn/  # output: .../FastBurnt/fbn.exe
 ```
 
 Add make support (optional)
@@ -37,7 +37,7 @@ make
 
 ## Usage
 ```
-fastburnt [--debug|--trace] [--whitelist <whitelist.csv>] [--blacklist <blacklist.csv>]
+fbn [--debug|--trace] [--whitelist <whitelist.csv>] [--blacklist <blacklist.csv>]
 [-output <output file>] [-computers list.csv] <7zArchive1 ... n>
 
 Detailed usage:
@@ -64,7 +64,7 @@ Detailed usage:
 
 Example of command line execution
 ```
- ./fastburnt Resultats/*7z
+ ./fbn Resultats/*7z
   INFO[0000] File 'Resultats/ORC_WorkStation_DESKTOP-LCINJKL_FastFind.7z', Hostname DESKTOP-LCINJKL matches: 0
   INFO[0000] File 'Resultats/ORC_WorkStation_DESKTOP-LCINQGJ_FastFind.7z', Hostname DESKTOP-LCINQGJ matches: 4
   INFO[0000] File 'Resultats/ORC_WorkStation_DESKTOP-JKLNQGJ_FastFind.7z', Hostname DESKTOP-JKLNQGJ matches: 1

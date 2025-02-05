@@ -5,7 +5,8 @@
 *.swp
 
 # Binaries for programs and plugins
-./fastburnt_cli
+./fastburn
+./fbn
 *.exe
 *.exe~
 *.dll

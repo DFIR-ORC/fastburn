@@ -1,23 +1,7 @@
 package main
 
 /*
-fastburnt_cli command line tool to parse FastFind results
-
-BUILD
-
-  export GOPATH="$GOPATH:$(pwd)"
-
-  go get  "github.com/kjk/lzmadec"
-  go get "github.com/sirupsen/logrus"
-
-  go build fastburnt/cmd/fastburnt_cli
-
-RUN
-
-Attention: requires 7z binary in the path named as 7z (or 7z.exe on Windows)
-
-  ./fastburnt_cli <7z archive1 ... n>
-
+fastburn command line tool to parse FastFind results
 **/
 
 import (
@@ -28,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"dfir-orc/fastburnt/internal/filter"
-	"dfir-orc/fastburnt/internal/utils"
+	"fastburn/internal/filter"
+	"fastburn/internal/utils"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -116,9 +100,9 @@ func main() {
 
 	// generating exports filenames
 	prefix := strings.ReplaceAll(time.Now().Format(time.RFC3339), ":", "_")
-	csv_matches_fname := prefix + "-fastfound_matches.csv"
-	csv_computers_fname := prefix + "-fastfound_computers.csv"
-	csv_stats_fname := prefix + "-fastfound_stats.csv"
+	csv_matches_fname := prefix + "-fastburn_matches.csv"
+	csv_computers_fname := prefix + "-fastburn_computers.csv"
+	csv_stats_fname := prefix + "-fastburn_stats.csv"
 
 	if outputFlag != "" {
 		csv_matches_fname = outputFlag

@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"dfir-orc/fastburnt/internal/utils"
+	"fastburn/internal/utils"
 
 	log "github.com/sirupsen/logrus"
 )

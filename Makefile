@@ -1,8 +1,8 @@
-PROJECT_NAME := "fastburnt"
-PKG := "dfir-orc/fastburnt/cmd/fastburnt_cli"
+PROJECT_NAME := "fastburn"
+PKG := "fastburn/cmd/fastburn"
 PLATFORMS := linux windows
 ARCHITECTURES := 386 amd64
-BINARY :=fastburnt_cli
+BINARY :=fbn
 LDFLAGS  :=
 #LDFLAGS := "-ldflags XXX YYYY ZZZ"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
@@ -29,10 +29,10 @@ dep: ## Get the dependencies
 	go get -v -d ./...
 
 build: dep ## Build the binary file
-	go build  ${LDFLAGS} -v $(PKG)
+	go build  -o ${BINARY} ${LDFLAGS} -v $(PKG) 
 
 clean: ## Remove previous build
-	rm -f $(PROJECT_NAME)
+	rm -f $(BINARY)
 
 cross:
 	$(foreach GOOS, $(PLATFORMS),\

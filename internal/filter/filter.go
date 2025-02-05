@@ -1,9 +1,14 @@
 package filter
 
+/*
+ *
+ * Filtering of results with blacklists and whitelists
+ *
+ */
 import (
 	"strings"
 
-	fastfound "dfir-orc/fastburnt/internal/fastfind"
+	fbn "fastburn/internal/fastfind"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -29,7 +34,7 @@ func (c *criteriaEntry) Match(sha256 string, sha1 string, md5 string, fullname s
 	return false
 }
 
-func isListed(criterias *[]criteriaEntry, m *fastfound.FastFindMatch) (bool, string) {
+func isListed(criterias *[]criteriaEntry, m *fbn.FastFindMatch) (bool, string) {
 	log.Trace("Matching " + m.Fullname)
 
 	fullname := strings.ToLower(m.Fullname)
@@ -44,13 +49,13 @@ func isListed(criterias *[]criteriaEntry, m *fastfound.FastFindMatch) (bool, str
 }
 
 // Match - method returning whether a FastFind Result looks like a specialy interresting file (for IOC loaded in filter_data.go)
-func (f *Filter) IsWhitelisted(m *fastfound.FastFindMatch) (bool, string) {
+func (f *Filter) IsWhitelisted(m *fbn.FastFindMatch) (bool, string) {
 	log.Trace("Matching in whitelist: " + m.Fullname + " " + m.SHA256)
 	return isListed(&f.whitelistCriteria, m)
 }
 
 // Match - method returning whether a FastFind Result looks like a specialy interresting file (for IOC loaded in filter_data.go)
-func (f *Filter) IsBlacklisted(m *fastfound.FastFindMatch) (bool, string) {
+func (f *Filter) IsBlacklisted(m *fbn.FastFindMatch) (bool, string) {
 	log.Trace("Matching in blacklist: " + m.Fullname + " " + m.SHA256)
 	return isListed(&f.blacklistCriteria, m)
 }

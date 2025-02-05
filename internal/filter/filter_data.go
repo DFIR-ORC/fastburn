@@ -1,5 +1,11 @@
 package filter
 
+/*
+ *
+ * Loading of lists of f result filtering
+ *
+ */
+
 import (
 	"fmt"
 	"os"

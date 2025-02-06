@@ -1,7 +1,9 @@
 package main
 
 /*
+
 fastburn command line tool to parse FastFind results
+
 **/
 
 import (
@@ -53,7 +55,7 @@ func main() {
 	var outputFlag string
 	var computersFlag string
 	var statsFlag string
-	var flagTimeline string
+	var timelineFlag string
 
 	debugFlag := flag.Bool("debug", false, "Enable debug mode")
 	traceFlag := flag.Bool("trace", false, "Enable trace mode")
@@ -64,7 +66,7 @@ func main() {
 	flag.StringVar(&outputFlag, "output", "", "Specify output filename")
 	flag.StringVar(&computersFlag, "computers", "", "Specify computers listing filename")
 	flag.StringVar(&statsFlag, "stats", "", "Specify statistics filename")
-	flag.StringVar(&flagTimeline, "timeline", "", "Specify a filename for timeline output")
+	flag.StringVar(&timelineFlag, "timeline", "", "Specify a filename for timeline output")
 	flag.Parse()
 
 	args := flag.Args()
@@ -103,6 +105,11 @@ func main() {
 	csv_matches_fname := prefix + "-fastburn_matches.csv"
 	csv_computers_fname := prefix + "-fastburn_computers.csv"
 	csv_stats_fname := prefix + "-fastburn_stats.csv"
+	timeline_fname := prefix + "-fastburn_timeline.csv"
+
+	if timelineFlag != "" {
+		timeline_fname = timelineFlag
+	}
 
 	if outputFlag != "" {
 		csv_matches_fname = outputFlag
@@ -116,7 +123,8 @@ func main() {
 		csv_stats_fname = statsFlag
 	}
 
-	err = saveResults(csv_matches_fname, csv_computers_fname, csv_stats_fname, flagTimeline, files, matches, computers, stats, timeline, &postfilter)
+	err = saveResults(csv_matches_fname, csv_computers_fname, csv_stats_fname, timeline_fname,
+		files, matches, computers, stats, timeline, &postfilter)
 	if err != nil {
 		log.Errorf("Failed to export results: %v", err)
 		os.Exit(1)

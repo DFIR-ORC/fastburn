@@ -1,5 +1,10 @@
 package fastfind
 
+/*
+
+
+ **/
+
 import (
 	"encoding/json"
 	"fastburn/internal/utils"

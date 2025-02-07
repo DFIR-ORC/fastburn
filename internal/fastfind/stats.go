@@ -66,6 +66,42 @@ func (stats *FastFindMatchesStats) UpdateComputers(comp *FastFindComputer) {
 	stats.Fields["Computers-Domain"][domain]++
 }
 
+type DateType int
+
+const (
+	CreationTimestamp = iota
+	LastModificationTimestamp
+	LastEntryChangeTimestamp
+	LastAccessTimestamp
+)
+
+func (match *FastFindMatch) GetFirstNonEmptyTimestamp(dateType DateType) string {
+	var dates []string
+
+	switch dateType {
+	case CreationTimestamp:
+		dates = []string{match.Creation, match.FilenameCreation, match.AltFilenameCreation}
+	case LastModificationTimestamp:
+		dates = []string{match.LastModification, match.FilenameLastModification, match.AltFilenameLastModification}
+	case LastEntryChangeTimestamp:
+		dates = []string{match.LastEntryChange, match.FilenameLastEntryChange, match.AltFilenameLastEntryChange}
+	case LastAccessTimestamp:
+		dates = []string{match.LastAccess, match.FilenameLastAccess, match.AltFilenameLastAccess}
+	default:
+		log.Warn("Unsupported timestamp type")
+		return ""
+	}
+
+	for _, date := range dates {
+		if date != "" {
+			return date
+		}
+	}
+
+	log.Warn("Missing timestamp for " + match.Fullname)
+	return ""
+}
+
 // update the stats with a match information
 func (stats *FastFindMatchesStats) UpdateMatches(match *FastFindMatch) {
 
@@ -82,10 +118,10 @@ func (stats *FastFindMatchesStats) UpdateMatches(match *FastFindMatch) {
 	stats.Fields["Matches-Fullname"][match.Fullname]++
 	stats.Fields["Matches-MD5"][match.MD5]++
 	stats.Fields["Matches-SHA1"][match.SHA1]++
-	stats.Fields["Matches-ModificationDay"][truncateISOToDay(match.LastModification)]++
-	stats.Fields["Matches-ModificationMonth"][truncateISOToMonth(match.LastModification)]++
-	stats.Fields["Matches-CreationDay"][truncateISOToDay(match.Creation)]++
-	stats.Fields["Matches-CreationMonth"][truncateISOToMonth(match.Creation)]++
+	stats.Fields["Matches-ModificationDay"][truncateISOToDay(match.GetFirstNonEmptyTimestamp(LastModificationTimestamp))]++
+	stats.Fields["Matches-ModificationMonth"][truncateISOToMonth(match.GetFirstNonEmptyTimestamp(LastModificationTimestamp))]++
+	stats.Fields["Matches-CreationDay"][truncateISOToDay(match.GetFirstNonEmptyTimestamp(CreationTimestamp))]++
+	stats.Fields["Matches-CreationMonth"][truncateISOToMonth(match.GetFirstNonEmptyTimestamp(CreationTimestamp))]++
 }
 
 func (stats *FastFindMatchesStats) ToCSV(w io.Writer) error {

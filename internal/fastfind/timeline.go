@@ -116,7 +116,7 @@ func (merger *timestampMatchMerger) addStamp(timestamp string, stampname string)
 	if timestamp != "" {
 		(merger.Timestamps)[timestamp]++
 	} else {
-		log.Warn("Empty " + stampname + " time for match " + merger.Match.Fullname)
+		log.Debug("Empty " + stampname + " time for match " + merger.Match.Fullname)
 	}
 }
 
@@ -140,6 +140,10 @@ func (tl *Timeline) Register(match *FastFindMatch) {
 	merger.addStamp(match.AltFilenameLastModification, "AltFilenameLastModification")
 	merger.addStamp(match.AltFilenameLastEntryChange, "AltFilenameLastEntryChange")
 	merger.addStamp(match.AltFilenameLastAccess, "AltFilenameLastAccess")
+
+	if len(merger.Timestamps) == 0 {
+		log.Warn("Missing timestamps for match " + match.Fullname)
+	}
 
 	// Foreach different timestamp
 	// create a new event

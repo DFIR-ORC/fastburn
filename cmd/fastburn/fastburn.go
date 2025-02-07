@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"fastburn/internal/fastfind"
 	"fastburn/internal/filter"
 	"fastburn/internal/utils"
 
@@ -67,6 +68,9 @@ func main() {
 	flag.StringVar(&computersFlag, "computers", "", "Specify computers listing filename")
 	flag.StringVar(&statsFlag, "stats", "", "Specify statistics filename")
 	flag.StringVar(&timelineFlag, "timeline", "", "Specify a filename for timeline output")
+
+	htmlFlag := flag.Bool("html", false, "Generate an HTML output")
+
 	flag.Parse()
 
 	args := flag.Args()
@@ -121,6 +125,15 @@ func main() {
 
 	if statsFlag != "" {
 		csv_stats_fname = statsFlag
+	}
+
+	if *htmlFlag {
+		html_fname := prefix + "-fastburn_matches.html"
+		err = fastfind.ExportMatchesToHTML(html_fname, matches)
+		if err != nil {
+			log.Errorf("Failed to export results: %v", err)
+			os.Exit(1)
+		}
 	}
 
 	err = saveResults(csv_matches_fname, csv_computers_fname, csv_stats_fname, timeline_fname,

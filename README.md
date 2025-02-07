@@ -38,7 +38,7 @@ make
 ## Usage
 ```
 fbn [--debug|--trace] [--whitelist <whitelist.csv>] [--blacklist <blacklist.csv>]
-[-output <output file>] [-computers list.csv] <7zArchive1 ... n>
+[-output <output file>] [-computers list.csv]  [-html] <7zArchive1 ... n>
 
 Detailed usage:
 
@@ -48,6 +48,8 @@ Detailed usage:
         Specify computers listing filename
   -debug
         Enable debug mode
+  -html
+        Enable HTML output
   -output string
         Specify output filename
   -stats string

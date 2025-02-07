@@ -23,7 +23,7 @@ Le fichier CSV est automatiquement généré au terme de l'exécution.
    ./fbn [--debug|-trace] 
       [-whitelist <whitelist.csv>] [-blacklist <blacklist.csv>] 
       [-output <output file>] [-computers <machine list file>] 
-      [-timeline <timeline file>] 
+      [-timeline <timeline file>] [-html]
       <7zArchive1 ... n>
 ```
 
@@ -48,6 +48,7 @@ Détail des options:
 * `output` permet de forcer le nom du fichier de résultats
 * `computers` permet de forcer le nom de fichier récapitulant la liste les machines trouvées dans les archives traitées
 * `timeline` permet de forcer le nom de fichier de la timeline 
+* `html` enable the output of an HTML report
 
 Le format des fichiers de liste blanches et noire est le même. Il est documenté ci-dessous dans la section "Format de fichier de Flags" ci dessous.
 

@@ -45,7 +45,8 @@ func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
 		log.Trace(fmt.Sprintf("Examining : '%s'", filename))
 		isdir, err := isDir(filename)
 		if err != nil {
-			log.Warningf("Failed to examine '%s'", filename)
+			log.Errorf("Failed to examine '%s'", filename)
+			return files, err
 		} else {
 			if isdir {
 				// directory, globing files

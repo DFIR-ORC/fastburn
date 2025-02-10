@@ -50,6 +50,15 @@ func Version() string {
 	return fmt.Sprintf("%s-%s", time, revision)
 }
 
+func PrintUsage() {
+	fmt.Fprintln(os.Stderr)
+	fmt.Fprintf(os.Stderr, "Usage: %s [options]\n", os.Args[0])
+	fmt.Fprintln(os.Stderr)
+	flag.PrintDefaults()
+	fmt.Fprintln(os.Stderr)
+	os.Exit(2)
+}
+
 func main() {
 	var whiteFilename string
 	var blackFilename string
@@ -57,6 +66,8 @@ func main() {
 	var computersFlag string
 	var statsFlag string
 	var timelineFlag string
+
+	flag.Usage = PrintUsage
 
 	infoFlag := flag.Bool("info", false, "Enable debug mode")
 	debugFlag := flag.Bool("debug", false, "Enable debug mode")

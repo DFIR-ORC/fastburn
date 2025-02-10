@@ -58,6 +58,7 @@ func main() {
 	var statsFlag string
 	var timelineFlag string
 
+	infoFlag := flag.Bool("info", false, "Enable debug mode")
 	debugFlag := flag.Bool("debug", false, "Enable debug mode")
 	traceFlag := flag.Bool("trace", false, "Enable trace mode")
 	versionFlag := flag.Bool("version", false, "Show version and exit")
@@ -80,7 +81,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	utils.SetLogLevel(*debugFlag, *traceFlag)
+	utils.SetLogLevel(*infoFlag, *debugFlag, *traceFlag)
 
 	var err error
 

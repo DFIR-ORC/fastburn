@@ -141,15 +141,18 @@ func PrintAndLog(level log.Level, format string, args ...interface{}) {
 	fmt.Println(message)
 }
 
-func SetLogLevel(debug bool, trace bool) {
+func SetLogLevel(info bool, debug bool, trace bool) {
 
 	log.SetReportCaller(false)
-	log.SetLevel(log.InfoLevel)
-	if debug {
-		log.SetLevel(log.TraceLevel)
-	}
+
 	if trace {
 		log.SetLevel(log.TraceLevel)
+	} else if debug {
+		log.SetLevel(log.DebugLevel)
+	} else if info {
+		log.SetLevel(log.InfoLevel)
+	} else {
+		log.SetLevel(log.ErrorLevel)
 	}
 }
 

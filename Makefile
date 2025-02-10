@@ -2,7 +2,7 @@ PROJECT_NAME := "fastburn"
 PKG := "fastburn/cmd/fastburn"
 PLATFORMS := linux windows
 ARCHITECTURES := 386 amd64
-BINARY :=fbn
+BINARY := fbn
 LDFLAGS  :=
 #LDFLAGS := "-ldflags XXX YYYY ZZZ"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
@@ -29,7 +29,12 @@ dep: ## Get the dependencies
 	go get -v -d ./...
 
 build: dep ## Build the binary file
-	go build  -o ${BINARY} ${LDFLAGS} -v $(PKG) 
+ifeq ($(OS),Windows_NT)
+	windres -o cmd/fastburn/rsrc/rsrc_windows.syso cmd/fastburn/rsrc/fastburn.rc
+	go build -o ${BINARY}.exe ${LDFLAGS} -v $(PKG)
+else
+	go build -o ${BINARY} ${LDFLAGS} -v $(PKG)
+endif
 
 clean: ## Remove previous build
 	rm -f $(BINARY)

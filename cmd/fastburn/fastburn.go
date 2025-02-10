@@ -18,6 +18,8 @@ import (
 	"fastburn/internal/filter"
 	"fastburn/internal/utils"
 
+	_ "fastburn/cmd/fastburn/rsrc"
+
 	log "github.com/sirupsen/logrus"
 )
 

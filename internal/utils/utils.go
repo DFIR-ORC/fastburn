@@ -118,6 +118,29 @@ func Uniq(elements []string) []string {
 	return result
 }
 
+func PrintAndLog(level log.Level, format string, args ...interface{}) {
+
+	message := fmt.Sprintf(format, args...)
+
+	switch level {
+	case log.DebugLevel:
+		log.Debug(message)
+	case log.InfoLevel:
+		log.Info(message)
+	case log.WarnLevel:
+		log.Warn(message)
+	case log.ErrorLevel:
+		log.Error(message)
+	case log.FatalLevel:
+		log.Fatal(message)
+	case log.PanicLevel:
+		log.Panic(message)
+	default:
+	}
+
+	fmt.Println(message)
+}
+
 func SetLogLevel(debug bool, trace bool) {
 
 	log.SetReportCaller(false)

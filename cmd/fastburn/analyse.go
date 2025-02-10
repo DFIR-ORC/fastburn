@@ -7,6 +7,7 @@ Supporting functions for fastburn command line tool
 
 import (
 	"fmt"
+	"strconv"
 
 	fbn "fastburn/internal/fastfind"
 	"fastburn/internal/filter"
@@ -28,8 +29,13 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 		log.Errorf("Failed to expand paths: %v", err)
 		return nil, nil, nil, nil, err
 	}
-	log.Info(fmt.Sprintf("%d files to process", len(files)))
-	log.Debug(fmt.Sprintf("Processing %d files", len(files)))
+
+	utils.PrintAndLog(log.InfoLevel, "%d files to process", len(files))
+
+	fmt.Println()
+	rowfmt := "%-40s %-8s %s\n"
+	fmt.Printf(rowfmt, "Hostname", "Matches", "File")
+	fmt.Printf(rowfmt, "--------", "-------", "----")
 
 	for _, fname := range files {
 		matches, computers, err = fbn.ProcessFile(fname, matches, computers)
@@ -39,13 +45,16 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 			c := computers[len(computers)-1]
 			stats.UpdateComputers(c)
 			if c.EmotetInfected {
-				log.Warning("File '" + fname + "', Hostname " + c.Hostname + " matches: " + fmt.Sprintf("%v", c.NbMatches) + ": Emotet infected")
+				log.Warning("Host: '" + c.Hostname + "', File: '" + fname + "', matches: " + fmt.Sprintf("%v", c.NbMatches) + ": Emotet infected")
 			} else {
-				log.Info("File '" + fname + "', Hostname " + c.Hostname + " matches: " + fmt.Sprintf("%v", c.NbMatches))
+				log.Info("Host: '" + c.Hostname + "', File: '" + fname + "', matches: " + fmt.Sprintf("%v", c.NbMatches))
+				fmt.Printf(rowfmt, c.Hostname, strconv.FormatUint(uint64(c.NbMatches), 10), fname)
 			}
 		}
-
 	} //eo foreach filename
+
+	fmt.Println()
+
 	return files, &matches, &computers, stats, nil
 }
 
@@ -75,7 +84,7 @@ func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesSta
 			}
 		}
 		if isWhilelisted {
-			log.Info("Detection on " + m.Computer + " [" + m.Kind.String() + "] : " + m.URI() + " -" + pres_msg + back_msg + " - Reason:<" + m.Reason + "> - Archive:" + m.ArchiveName)
+			utils.PrintAndLog(log.InfoLevel, "Detection on '%s' [%s]: %s - %s%s - Reason:<%s> - Archive: %s", m.Computer, m.Kind.String(), m.URI(), pres_msg, back_msg, m.Reason, m.ArchiveName)
 			whitelistCount = whitelistCount + 1
 		}
 
@@ -106,7 +115,7 @@ func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats
 	if err != nil {
 		log.Warning("Export to '" + csv_computers_fname + "' failed: " + err.Error())
 	} else {
-		log.Info("Computers exported to '" + csv_computers_fname + "'")
+		utils.PrintAndLog(log.InfoLevel, "Computers exported to '%s'", csv_computers_fname)
 	}
 
 	if len(*matches) > 0 {
@@ -120,19 +129,18 @@ func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats
 		if err != nil {
 			log.Warning("Export to '" + csv_matches_fname + "' failed: " + err.Error())
 		} else {
-			log.Info("Matches exported to '" + csv_matches_fname + "'")
+			utils.PrintAndLog(log.InfoLevel, "Matches exported to '%s'", csv_matches_fname)
 		}
 	} else {
-		log.Infof("No match found in %d computers", len(*computers))
+		utils.PrintAndLog(log.InfoLevel, "No match found in %d computers", len(*computers))
 	}
-	log.Infof("%d archives processed for %d computers, %d matches found", len(files), len(*computers), len(*matches))
 
 	// exporting stats
 	err = fbn.ExportStatsToCSV(csv_stats_fname, stats)
 	if err != nil {
 		log.Warning("Stat report export to '" + csv_stats_fname + "' failed: " + err.Error())
 	} else {
-		log.Info("Stat report exported to '" + csv_stats_fname + "'")
+		utils.PrintAndLog(log.InfoLevel, "Stat report exported to '%s'", csv_stats_fname)
 	}
 
 	// exporting timeline
@@ -144,5 +152,9 @@ func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats
 			log.Info("Timeline exported to '" + timeline_fname + "'")
 		}
 	}
+
+	fmt.Println()
+	utils.PrintAndLog(log.InfoLevel, "%d archives processed for %d computers, %d matches found", len(files), len(*computers), len(*matches))
+
 	return nil
 }

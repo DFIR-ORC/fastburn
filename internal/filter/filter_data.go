@@ -7,6 +7,7 @@ package filter
  */
 
 import (
+	"fastburn/internal/utils"
 	"fmt"
 	"os"
 	"regexp"
@@ -76,7 +77,7 @@ func (f *Filter) LoadBlacklistCSV(filename string) error {
 func (f *Filter) LoadLists(whiteFilename string, blackFilename string) error {
 
 	if whiteFilename != "" {
-		log.Info("Whitelist file: " + whiteFilename)
+		utils.PrintAndLog(log.InfoLevel, "Whitelist file: %s", whiteFilename)
 		csv_err := f.LoadWhitelistCSV(whiteFilename)
 		if csv_err != nil {
 			log.Errorf("Failed to load post processing flags from '%s': %s", whiteFilename, csv_err.Error())
@@ -85,7 +86,7 @@ func (f *Filter) LoadLists(whiteFilename string, blackFilename string) error {
 	}
 
 	if blackFilename != "" {
-		log.Info("Blacklist file: " + blackFilename)
+		utils.PrintAndLog(log.InfoLevel, "Blacklist file: %s", whiteFilename)
 		csv_err := f.LoadBlacklistCSV(blackFilename)
 		if csv_err != nil {
 			log.Errorf("Failed to load post processing blacklist from '%s': %s", blackFilename, csv_err.Error())

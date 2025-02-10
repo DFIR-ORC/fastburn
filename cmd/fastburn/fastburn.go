@@ -146,7 +146,7 @@ func main() {
 
 	if *htmlFlag {
 		html_fname := prefix + "-fastburn_matches.html"
-		err = fastfind.ExportMatchesToHTML(html_fname, matches)
+		err = fastfind.ExportToHTML(html_fname, matches, stats)
 		if err != nil {
 			log.Errorf("Failed to export results: %v", err)
 			os.Exit(1)

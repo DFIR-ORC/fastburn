@@ -67,7 +67,7 @@ func ExportMatchesToCSV(filename string, matches *FastFindMatchesList, isInfecte
 	return nil
 }
 
-// ExportMatchesToCSV - Export a list of matches to a CSV file appending filter columens from the provided functions
+// ExportComputersToCSV - Export a list of matches to a CSV file appending filter columens from the provided functions
 func ExportComputersToCSV(filename string, computers *FastFindComputersList) error {
 	log.Debug("Exporting CSV computers to " + filename)
 	fout, err := os.Create(filename)

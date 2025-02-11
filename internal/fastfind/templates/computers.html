@@ -1,0 +1,24 @@
+{{ define "computers.html"}}
+<table class="computers results">
+    <thead>
+        <tr>				
+            <th>Computer</th>
+            <th>ComputerOS</th>
+            <th>ComputerRole</th>
+            <th>ORCVersion</th>
+            <th>NbMatches</th>
+            <th>ArchiveName</th>
+        </tr>
+    </thead>
+    <tbody>					
+    {{ range .Computers }}<tr> 
+         <td> {{ .Hostname  }} </td>
+         <td> {{ .OS }} </td>
+         <td> {{ .Role }} </td>
+         <td> {{ .ORCVersion }} </td>
+         <td> {{ .NbMatches }} </td>
+         <td> {{ .ArchiveName }} </td>
+     </tr>{{end}}
+    </tbody>
+</table>
+{{end}}

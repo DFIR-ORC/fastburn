@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{ .Title }}</title>
+		<style>
+		header {
+			background-color: #333;
+			color: #fff;
+			padding: 1rem;
+			position: fixed; 
+			top: 0;
+			left: 0;
+			width: 100%; 
+			z-index: 1;    
+			display: flex; 
+			align-items: center; 
+		}
+
+		nav {
+			display: flex;
+			justify-content: space-between; 
+			margin-left: 2em;
+		}
+
+		nav ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+		}
+
+		nav li {
+			margin-right: 1rem;
+		}
+
+		nav a {
+			color: #fff;
+			text-decoration: none;
+		}
+
+		nav a:hover {
+			text-decoration: underline;
+		}
+
+		body {
+			font-family: helvetica, sans-serif;
+			font-size: small;
+			margin: 0;
+		}
+
+		table.results {
+			border-collapse: collapse;
+			max-width: 99%;
+			min-width: 50%;
+			margin: auto;
+		}
+
+		.results tr:nth-child(even) {
+			background-color: #EAEAFA;
+		}
+
+		.results td {
+			border: 1px solid black;
+		}
+
+		.results th {
+			background-color: black;
+			border: 1px solid #EAEAFA;
+			color: #EAEAFA;
+			border: 1px black;
+		}
+
+		main {
+			margin-top: 60px; /* Adjust for header height */ 
+			padding: 2rem;
+			margin-left: 0;
+			margin-right: 0;
+		}
+
+		h2 {
+			padding-left: 1rem;
+		}
+		</style>
+	</head>
+	<body>
+		<header>
+		<h1>{{ .Title }}</h1>
+		<nav><ul>
+			<li><a href='#stats'>Statistics</a></li>
+			<li><a href='#computers'>Computers</a></li>
+			<li><a href='#matches'>Matches</a></li>
+		</ul></nav>
+		</header>
+		<main>
+		<h2><a id='stats'>Statistics</a></h2>
+		{{ template "stats.html" . }}
+		<hr>
+		<h2><a id='computers'>Computers</a></h2>
+		{{ template "computers.html" . }}
+		<hr>
+		<h2><a id='matches'>Matches</a></h2>
+		{{template "matches.html" . }}
+		<hr>
+		<h2><a id='timeline'>Timeline</a></h2>
+		{{ template "timeline.html" . }}
+		</main>		
+	 </body>
+ </html>

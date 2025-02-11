@@ -1,0 +1,16 @@
+{{ define "stats.html"}}
+<table class="stats results">
+    <thead>
+        <tr>				
+            <th>Category</th>
+            <th>Value</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{ range $key,$value := .Stats.Fields }}{{ range $innerKey, $innerValue := $value }}<tr>
+        <td> {{ $key }} </td><td> {{ $innerKey }} </td><td> {{ $innerValue }} </td>
+    </tr>{{ end }}{{ end }}
+    </tbody>
+</table>
+{{end}}

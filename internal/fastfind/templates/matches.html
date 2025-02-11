@@ -1,0 +1,72 @@
+{{define "matches.html"}}
+<table class="matches results">
+    <thead>
+        <tr>				
+            <th>Computer</th>
+            <th>ComputerRole</th>
+            <th>ComputerOS</th>
+            <th>ORCVersion</th>
+            <th>MatchType</th>
+            <th>Reason</th>
+            <th>Filename
+            <th>AltName</th>
+            <th>RegKey</th>
+            <th>RegType</th>
+            <th>RegValue</th>
+            <th>FileSize</th>
+            <th>MD5</th>
+            <th>SHA1</th>
+            <th>SHA256</th>
+            <th>FileCreation</th>
+            <th>FileLastModification</th>
+            <th>FileLastEntryChange</th>
+            <th>FileLastAccess</th>
+            <th>FilenameCreation</th>
+            <th>FilenameLastModification</th>
+            <th>FilenameLastEntryChange</th>
+            <th>FilenameLastAccess</th>
+            <th>AltFilenameCreation</th>
+            <th>AltFilenameLastModification</th>
+            <th>AltFilenameLastEntryChange</th>
+            <th>AltFilenameLastAccess</th>
+            <th>VolumeID</th>
+            <th>SnapshotID</th>
+            <th>ArchiveName</th>
+        </tr>
+    </thead>
+    <tbody>{{ range .Matches }}
+         {{ if .Ignore }}<tr class="ignore">	{{ else }}<tr class="match">{{end}}
+            <td> {{ .Computer }} </td>
+            <td> {{ .ComputerRole }} </td>
+            <td> {{ .ComputerOS }} </td>
+            <td> {{ .ORCVersion }} </td>
+            <td> {{ printf "%s" .Kind }} </td>
+            <td> {{ .Reason }} </td>
+            <td> {{ .Fullname }} </td>
+            <td> {{ .AltFilename }} </td>
+            <td> {{ .RegKey }}  </td>
+            <td> {{ .RegType }} </td>
+            <td> {{ .RegValue }} </td>
+            <td> {{ .Size }} </td>
+            <td> {{ .MD5 }} </td>
+            <td> {{ .SHA1 }} </td>
+            <td> {{ .SHA256 }} </td>
+            <td> {{ .Creation }} </td>
+            <td> {{ .LastModification }} </td>
+            <td> {{ .LastEntryChange }} </td>
+            <td> {{ .LastAccess }} </td>
+            <td> {{ .FilenameCreation }} </td>
+            <td> {{ .FilenameLastModification }} </td>
+            <td> {{ .FilenameLastEntryChange }} </td>
+            <td> {{ .FilenameLastAccess }} </td>
+            <td> {{ .AltFilenameCreation }} </td>
+            <td> {{ .AltFilenameLastModification }} </td>
+            <td> {{ .AltFilenameLastEntryChange }} </td>
+            <td> {{ .AltFilenameLastAccess }} </td>
+            <td> {{ .VolumeID }} </td>
+            <td> {{ .SnapshotID }} </td>
+            <td> {{ .ArchiveName }} </td>
+        </tr>{{ end }}
+    </tbody>
+</table>
+{{end}}

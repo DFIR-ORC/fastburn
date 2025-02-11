@@ -3,14 +3,34 @@
     <thead>
         <tr>				
             <th>Timestamp</th>
-            <th>MACB</th>
-            <th>Fullpath</th>
-            <th>XXX</th>
+            <th>SI_MACB</th>
+            <th>FN_MACB</th>
+            <th>ComputerName</th>
+            <th>Type</th>
+            <th>Name</th>            
+            <th>SizeInBytes</th>            
+            <th>Reason</th>
+            <th>MD5</th>
+            <th>SHA1</th>
+            <th>SHA256</th>                
+            <th>ArchiveName</th>
         </tr>
     </thead>
-    <tbody>
-    {{ range $key,$value := .Timeline.Events }}<tr>
-        <td> TODO </td>
+    <tbody>    
+    {{ range $event :=  .Timeline.SortedEvents  }}
+    <tr class="match">
+        <td> {{ $event.Timestamp }}</td>
+        <td> {{ $event.SIMACB }}</td>
+        <td> {{ $event.FNMACB  }}</td>
+        <td> {{ $event.Match.Computer  }}</td>
+        <td> {{ printf "%s" $event.Match.Kind  }}</td>
+        <td> {{ $event.Match.URI }}</td>
+        <td> {{ printf "%v" $event.Match.Size  }}</td>
+        <td> {{ $event.Match.Reason }}</td>
+        <td> {{ $event.Match.MD5  }}</td>
+        <td> {{ $event.Match.SHA1  }}</td>
+        <td> {{ $event.Match.SHA256  }}</td>
+        <td> {{ $event.Match.ArchiveName }} </td>
     </tr>{{ end }}
     </tbody>
 </table>

@@ -182,10 +182,18 @@ func macbToString(M bool, A bool, C bool, B bool) string {
 	return macb
 }
 
+func (e *TLEvent) SIMACB() string {
+	return macbToString(e.SI_M, e.SI_A, e.SI_C, e.SI_B)
+}
+
+func (e *TLEvent) FNMACB() string {
+	return macbToString(e.FN_M, e.FN_A, e.FN_C, e.FN_B)
+}
+
 func (e *TLEvent) ToCSV(w io.Writer) error {
 
-	si_macb := macbToString(e.SI_M, e.SI_A, e.SI_C, e.SI_B)
-	fn_macb := macbToString(e.FN_M, e.FN_A, e.FN_C, e.FN_B)
+	si_macb := e.SIMACB()
+	fn_macb := e.FNMACB()
 
 	fakeName := filepath.ToSlash(e.Match.Fullname)
 
@@ -224,16 +232,40 @@ func (e *TLEvent) ToCSV(w io.Writer) error {
 	return nil
 }
 
-func (tl *FastFindTimeline) ToCSV(w io.Writer) {
-
-	writeToCSV(w, csvHeaders)
-
+func (tl *FastFindTimeline) Keys() []string {
 	// sorting timestamps
 	stamps := make([]string, 0, len(tl.Events))
 	for stamp := range tl.Events {
 		stamps = append(stamps, stamp)
 	}
 	sort.Strings(stamps)
+	return stamps
+}
+
+func (tl *FastFindTimeline) SortedEvents() []*TLEvent {
+	// sorting timestamps
+	stamps := tl.Keys()
+
+	events := make([](*TLEvent), 0, len(tl.Events))
+
+	// foreach timestamp
+	for _, stamp := range stamps {
+		if stamp != "" {
+			evts := tl.Events[stamp]
+			// dump each event
+			for i := range evts {
+				events = append(events, &evts[i])
+			}
+		}
+	}
+	return events
+}
+
+func (tl *FastFindTimeline) ToCSV(w io.Writer) {
+
+	writeToCSV(w, csvHeaders)
+
+	stamps := tl.Keys()
 
 	// foreach timestamp
 	for _, stamp := range stamps {

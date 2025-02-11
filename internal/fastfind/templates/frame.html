@@ -60,6 +60,10 @@
 			background-color: #EAEAFA;
 		}
 
+		.results tr.ignore {
+			background-color: grey;
+		}
+
 		.results td {
 			border: 1px solid black;
 		}
@@ -80,6 +84,13 @@
 
 		h2 {
 			padding-left: 1rem;
+			padding-top: 0.5rem;
+			padding-bottom: 0.5rem;
+			border-bottom: 1px solid black;
+			border-left: 5px solid black;
+			margin-top: 6rem;
+			margin-bottom: 1rem;
+
 		}
 		</style>
 	</head>
@@ -90,19 +101,24 @@
 			<li><a href='#stats'>Statistics</a></li>
 			<li><a href='#computers'>Computers</a></li>
 			<li><a href='#matches'>Matches</a></li>
+			<li><a href='#timeline'>Timeline</a></li>
 		</ul></nav>
 		</header>
 		<main>
-		<h2><a id='stats'>Statistics</a></h2>
+		<a id='stats'>&nbsp;</a>
+		<h2>Statistics</h2>
 		{{ template "stats.html" . }}
-		<hr>
-		<h2><a id='computers'>Computers</a></h2>
+
+		<a id='computers'>&nbsp;</a>
+		<h2>Computers</h2>
 		{{ template "computers.html" . }}
-		<hr>
-		<h2><a id='matches'>Matches</a></h2>
+
+		<a id='matches'>&nbsp;</a>
+		<h2>Matches</h2>
 		{{template "matches.html" . }}
-		<hr>
-		<h2><a id='timeline'>Timeline</a></h2>
+
+		<a id='timeline'>&nbsp;</a>		
+		<h2>Timeline</h2>
 		{{ template "timeline.html" . }}
 		</main>		
 	 </body>

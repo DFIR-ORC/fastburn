@@ -8,11 +8,8 @@
             <th>ORCVersion</th>
             <th>MatchType</th>
             <th>Reason</th>
-            <th>Filename
+            <th>URI</th>
             <th>AltName</th>
-            <th>RegKey</th>
-            <th>RegType</th>
-            <th>RegValue</th>
             <th>FileSize</th>
             <th>MD5</th>
             <th>SHA1</th>
@@ -42,11 +39,8 @@
             <td> {{ .ORCVersion }} </td>
             <td> {{ printf "%s" .Kind }} </td>
             <td> {{ .Reason }} </td>
-            <td> {{ .Fullname }} </td>
+            <td> {{ .URI }} </td>
             <td> {{ .AltFilename }} </td>
-            <td> {{ .RegKey }}  </td>
-            <td> {{ .RegType }} </td>
-            <td> {{ .RegValue }} </td>
             <td> {{ .Size }} </td>
             <td> {{ .MD5 }} </td>
             <td> {{ .SHA1 }} </td>

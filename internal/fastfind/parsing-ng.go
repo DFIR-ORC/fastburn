@@ -6,12 +6,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func processFFResultsNG(fname string, orcVersion string, resultData []byte, emotetInfected bool, matches []*FastFindMatch, computers []*FastFindComputer) ([]*FastFindMatch, []*FastFindComputer, error) {
+func processFFResultsNG(fname string, orcVersion string, resultData []byte, matches []*FastFindMatch, computers []*FastFindComputer) ([]*FastFindMatch, []*FastFindComputer, error) {
 	// parsing a FastFind XML result
 	var results FastFindResultNg
 	xml.Unmarshal(resultData, &results)
 
-	c := createFastFindComputer(fname, results.Computer, results.OS, results.Role, orcVersion, emotetInfected)
+	c := createFastFindComputer(fname, results.Computer, results.OS, results.Role, orcVersion)
 
 	var nbm uint
 	matches, nbm = recordFilesystemMatches(
@@ -36,8 +36,8 @@ func processFFResultsNG(fname string, orcVersion string, resultData []byte, emot
 	}
 
 	computers = append(computers, &c)
-	log.Debugf("Processing result: File '%s', Hostname %s Emotet: %v matches: %v ",
-		fname, c.Hostname, c.EmotetInfected, c.NbMatches)
+	log.Debugf("Processing result: File '%s', Hostname %s matches: %v ",
+		fname, c.Hostname, c.NbMatches)
 
 	return matches, computers, nil
 }

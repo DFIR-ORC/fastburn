@@ -55,7 +55,7 @@ var csvHeaders []string = []string{
 const csvQuote string = "\""
 const csvSep string = ";"
 
-type Timeline struct{ Events map[string][]TLEvent }
+type FastFindTimeline struct{ Events map[string][]TLEvent }
 
 func writeToCSV(w io.Writer, parts []string) (n int, err error) {
 	strLine := csvQuote +
@@ -100,8 +100,8 @@ func (e *TLEvent) SetMACB(timestamp string) {
 	// TODO: account for Filename et AltFilename timestamps
 }
 
-func InitTL() *Timeline {
-	tl := Timeline{}
+func InitTL() *FastFindTimeline {
+	tl := FastFindTimeline{}
 	tl.Events = make(map[string][]TLEvent)
 	return &tl
 }
@@ -120,7 +120,7 @@ func (merger *timestampMatchMerger) addStamp(timestamp string, stampname string)
 	}
 }
 
-func (tl *Timeline) Register(match *FastFindMatch) {
+func (tl *FastFindTimeline) Register(match *FastFindMatch) {
 
 	// Building the list of timestamps
 	merger := timestampMatchMerger{Match: match}
@@ -224,7 +224,7 @@ func (e *TLEvent) ToCSV(w io.Writer) error {
 	return nil
 }
 
-func (tl *Timeline) ToCSV(w io.Writer) {
+func (tl *FastFindTimeline) ToCSV(w io.Writer) {
 
 	writeToCSV(w, csvHeaders)
 

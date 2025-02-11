@@ -41,33 +41,16 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 	}
 
 	/////////// List all files inside archive
-	var emocheckFile string
 	var mainLogFile string
 	for _, e := range archive.Entries {
 		isEmocheck := IsEmocheckResult(e.Path)
 		log.Trace(fmt.Sprintf(
 			"Archive content name: %s, size: %d is_emocheck:%v",
 			e.Path, e.Size, isEmocheck))
-		if isEmocheck {
-			emocheckFile = e.Path
-		}
+
 		if e.Path == "FastFind.log" {
 			mainLogFile = e.Path
 		}
-	}
-
-	/////////// Process emocheck result
-	emotetInfected := false
-	if emocheckFile != "" {
-		log.Trace(fmt.Sprintf("Emocheck result found: %s", emocheckFile))
-		emocheck_data, err := readFileContentFromArchiveLZMADec(archive, emocheckFile)
-		if err != nil {
-			log.Errorf(
-				"Failed to decompress '%s' from archive '%s' with failed with :%v",
-				emocheckFile, fname, err)
-			return matches, computers, err
-		}
-		emotetInfected = processEmocheck(fname, emocheck_data)
 	}
 
 	////////// Process LogFile to determine ORC Version
@@ -81,8 +64,8 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 	orcVersion, isModern, err := scanORCVersion(string(mainLogContent))
 	if err != nil {
 		log.Errorf(
-			"Failed to decompress '%s' from archive '%s' with failed with :%v",
-			emocheckFile, fname, err)
+			"Failed to scan ORC Version from archive '%s' with failed with :%v",
+			fname, err)
 		return matches, computers, err
 	}
 	log.Debug("Orc version: " + orcVersion)
@@ -94,14 +77,14 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 	if err != nil {
 		log.Error(fmt.Sprintf(
 			"Failed to decompress '%s' from archive '%s' with failed with :%s",
-			emocheckFile, fname, err.Error()))
+			resultsFname, fname, err.Error()))
 		return matches, computers, err
 	}
 
 	// parsing
 	if isModern {
-		return processFFResultsNG(fname, orcVersion, resultData, emotetInfected, matches, computers)
+		return processFFResultsNG(fname, orcVersion, resultData, matches, computers)
 	} else {
-		return processFFResultsLegacy(fname, orcVersion, resultData, emotetInfected, matches, computers)
+		return processFFResultsLegacy(fname, orcVersion, resultData, matches, computers)
 	}
 }

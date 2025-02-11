@@ -22,7 +22,7 @@ func ExportMatchesToCSV(filename string, matches *FastFindMatchesList, isInfecte
 
 	err = w.Write([]string{
 		"Ignore", "Computer", "ComputerRole", "ComputerOS", "ORCVersion", "MatchType",
-		"Software", "Infection", "Reason",
+		"Software", "Reason",
 		"Filename", "AltName", "RegKey", "RegType", "RegValue",
 		"FileSize", "MD5", "SHA1", "SHA256",
 		"FileCreation", "FileLastModification", "FileLastEntryChange", "FileLastAccess",
@@ -37,18 +37,11 @@ func ExportMatchesToCSV(filename string, matches *FastFindMatchesList, isInfecte
 	// processing results
 	for _, m := range *matches {
 		log.Trace("Match " + m.Computer + " " + m.Fullname)
-		isBackdoored, backDescr := isInfected(m)
 		presMsg := ""
-		backMsg := ""
-
-		if isBackdoored {
-			backMsg = backDescr
-		}
-
 		err = w.Write([]string{
 			strconv.FormatBool(m.Ignore),
 			m.Computer, m.ComputerRole, m.ComputerOS, m.ORCVersion, m.Kind.String(),
-			presMsg, backMsg, m.Reason,
+			presMsg, m.Reason,
 			m.Fullname, m.AltFilename, m.RegKey, m.RegType, m.RegValue,
 			fmt.Sprintf("%d", m.Size), m.MD5, m.SHA1, m.SHA256,
 			m.Creation, m.LastModification, m.LastEntryChange, m.LastAccess,
@@ -80,8 +73,7 @@ func ExportComputersToCSV(filename string, computers *FastFindComputersList) err
 
 	err = w.Write([]string{
 		"Computer", "ComputerRole", "ComputerOS", "ORCVersion",
-		"Infection", "NbMatches",
-		"ArchiveName"})
+		"NbMatches", "ArchiveName"})
 	if err != nil {
 		log.Error(fmt.Sprintf("Failed to write to CSV file '%s': %v", filename, err))
 	}
@@ -89,14 +81,10 @@ func ExportComputersToCSV(filename string, computers *FastFindComputersList) err
 	// processing results
 	for _, c := range *computers {
 		log.Trace("Computer " + c.Hostname)
-		back_msg := ""
-		if c.EmotetInfected {
-			back_msg = "Emotet detected"
-		}
+
 		err = w.Write([]string{
 			c.Hostname, c.Role, c.OS, c.ORCVersion,
-			back_msg, fmt.Sprintf("%v", c.NbMatches),
-			c.ArchiveName})
+			fmt.Sprintf("%v", c.NbMatches), c.ArchiveName})
 		if err != nil {
 			log.Error(fmt.Sprintf("Failed to computer write to CSV file '%s': %v", filename, err))
 		}
@@ -123,7 +111,7 @@ func ExportStatsToCSV(filename string, stats *FastFindMatchesStats) error {
 	return nil
 }
 
-func ExportTimelineToCSV(filename string, timeline *Timeline) error {
+func ExportTimelineToCSV(filename string, timeline *FastFindTimeline) error {
 	log.Debug("Exporting timeline to " + filename)
 
 	fout, err := os.Create(filename)

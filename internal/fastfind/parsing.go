@@ -6,25 +6,11 @@ package fastfind
  **/
 
 import (
-	"encoding/json"
 	"fastburn/internal/utils"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
 )
-
-func processEmocheck(fname string, emocheck_data []byte) bool {
-
-	//log.Trace(fmt.Sprintf("Raw Emocheck: %v", emocheck_data))
-	var emocheck EmocheckMatch
-	json.Unmarshal(emocheck_data, &emocheck)
-	log.Trace(fmt.Sprintf("Emocheck Result: %v", emocheck))
-	if emocheck.IsInfected {
-		log.Trace(fname + " marked as infected by Emotet")
-		return true
-	}
-	return false
-}
 
 func recordRegMatch(
 	fname string, computer string, os string, role string, orcVersion string,
@@ -136,15 +122,14 @@ func recordFilesystemMatches(
 	return matches, nbmatches
 }
 
-func createFastFindComputer(fname string, computer string, os string, role string, orcversion string, emotetInfected bool) FastFindComputer {
+func createFastFindComputer(fname string, computer string, os string, role string, orcversion string) FastFindComputer {
 	return FastFindComputer{
-		Hostname:       computer,
-		OS:             os,
-		Role:           role,
-		ORCVersion:     orcversion,
-		EmotetInfected: emotetInfected,
-		ArchiveName:    fname,
-		NbMatches:      0}
+		Hostname:    computer,
+		OS:          os,
+		Role:        role,
+		ORCVersion:  orcversion,
+		ArchiveName: fname,
+		NbMatches:   0}
 }
 
 // Read a FastFind logfile and try to extract a version string

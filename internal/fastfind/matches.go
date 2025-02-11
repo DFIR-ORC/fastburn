@@ -58,13 +58,12 @@ type FastFindMatchesList []*FastFindMatch
 
 // FastFindComputer - a data structure to synthetise the informations related to a particular computer seen in FastFind_result.xml
 type FastFindComputer struct {
-	Hostname       string
-	ArchiveName    string
-	OS             string
-	Role           string
-	ORCVersion     string
-	NbMatches      uint
-	EmotetInfected bool
+	Hostname    string
+	ArchiveName string
+	OS          string
+	Role        string
+	ORCVersion  string
+	NbMatches   uint
 }
 
 type FastFindComputersList []*FastFindComputer

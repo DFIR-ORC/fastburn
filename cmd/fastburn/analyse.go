@@ -44,12 +44,8 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 		} else {
 			c := computers[len(computers)-1]
 			stats.UpdateComputers(c)
-			if c.EmotetInfected {
-				log.Warning("Host: '" + c.Hostname + "', File: '" + fname + "', matches: " + fmt.Sprintf("%v", c.NbMatches) + ": Emotet infected")
-			} else {
-				log.Info("Host: '" + c.Hostname + "', File: '" + fname + "', matches: " + fmt.Sprintf("%v", c.NbMatches))
-				fmt.Printf(rowfmt, c.Hostname, strconv.FormatUint(uint64(c.NbMatches), 10), fname)
-			}
+			log.Info("Host: '" + c.Hostname + "', File: '" + fname + "', matches: " + fmt.Sprintf("%v", c.NbMatches))
+			fmt.Printf(rowfmt, c.Hostname, strconv.FormatUint(uint64(c.NbMatches), 10), fname)
 		}
 	} //eo foreach filename
 
@@ -59,7 +55,7 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 }
 
 // analyseData - process the collected data in memory
-func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesStats, postfilter *filter.Filter) (*fbn.Timeline, error) {
+func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesStats, postfilter *filter.Filter) (*fbn.FastFindTimeline, error) {
 	log.Debug(fmt.Sprintf("Post-processing %v results", len(*matches)))
 	var blacklistCount uint64 = 0
 	var whitelistCount uint64 = 0
@@ -105,7 +101,7 @@ func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesSta
 // saveResults - export results to CSV files
 func saveResults(csv_matches_fname string, csv_computers_fname string, csv_stats_fname string, timeline_fname string,
 	files []string,
-	matches *fbn.FastFindMatchesList, computers *fbn.FastFindComputersList, stats *fbn.FastFindMatchesStats, timeline *fbn.Timeline,
+	matches *fbn.FastFindMatchesList, computers *fbn.FastFindComputersList, stats *fbn.FastFindMatchesStats, timeline *fbn.FastFindTimeline,
 	postfilter *filter.Filter) error {
 
 	// CSV export

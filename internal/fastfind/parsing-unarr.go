@@ -59,20 +59,6 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 		}
 	}
 
-	/////////// Process emocheck result
-	emotetInfected := false
-	if emocheckFile != "" {
-		log.Trace(fmt.Sprintf("Emocheck result found: %s", emocheckFile))
-		emocheckData, err := readFileContentFromArchiveUnarr(archive, emocheckFile)
-		if err != nil {
-			log.Errorf(
-				"Failed to decompress '%s' from archive '%s' with failed with :%v",
-				emocheckFile, fname, err)
-			return matches, computers, err
-		}
-		emotetInfected = processEmocheck(fname, emocheckData)
-	}
-
 	////////// Process LogFile to determine ORC Version
 	mainLogContent, err := readFileContentFromArchiveUnarr(archive, mainLogFile)
 	if err != nil {
@@ -103,8 +89,8 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 
 	// parsing
 	if isModern {
-		return processFFResultsNG(fname, orcVersion, resultData, emotetInfected, matches, computers)
+		return processFFResultsNG(fname, orcVersion, resultData, matches, computers)
 	} else {
-		return processFFResultsLegacy(fname, orcVersion, resultData, emotetInfected, matches, computers)
+		return processFFResultsLegacy(fname, orcVersion, resultData, matches, computers)
 	}
 }

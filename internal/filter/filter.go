@@ -55,7 +55,7 @@ func isListed(criterias *[]criteriaEntry, m *fbn.FastFindMatch) (bool, string) {
 			return true, c.Description
 		}
 	}
-	log.Trace("!Nomatch for '" + fullname + "'")
+	log.Tracef("!Nomatch for '%s' (%d criterias)", fullname, len(*criterias))
 	return false, ""
 }
 

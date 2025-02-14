@@ -49,6 +49,19 @@
 			margin: 0;
 		}
 
+		input.dpcontrol:checked + table tbody tr.ignore {
+ 			display: table-row;
+			background-color: #EAEAEA;
+			color: darkgray;
+
+		}
+
+		input.dpcontrol:not(:checked) + table tbody tr.ignore {
+ 			display: none; 			
+		}
+
+
+
 		table.results {
 			border-collapse: collapse;
 			max-width: 99%;
@@ -58,10 +71,6 @@
 
 		.results tr:nth-child(even) {
 			background-color: #EAEAFA;
-		}
-
-		.results tr.ignore {
-			background-color: grey;
 		}
 
 		.results td {

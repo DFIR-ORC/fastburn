@@ -1,4 +1,5 @@
 {{define "timeline.html"}}
+Show ignored entries <input class='dpcontrol' type='checkbox'>
 <table class="timeline results">
     <thead>
         <tr>				
@@ -18,7 +19,7 @@
     </thead>
     <tbody>    
     {{ range $event :=  .Timeline.SortedEvents  }}
-    <tr class="match">
+    {{ if $event.Match.Ignore }}<tr class="ignore">	{{ else }}<tr class="match">{{end}}    
         <td> {{ $event.Timestamp }}</td>
         <td> {{ $event.SIMACB }}</td>
         <td> {{ $event.FNMACB  }}</td>

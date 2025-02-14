@@ -47,16 +47,22 @@ func loadCSVCriterias(filename string, criterias *[]criteriaEntry) error {
 		log.Debugf("Failed to load filters from '%s': %s", filename, err.Error())
 		return err
 	}
-	log.Debugf("%d values loaded from %s", len(*criterias), filename)
+	log.Debugf("%d filters loaded from '%s'", len(*criterias), filename)
 
+	log.Tracef("Compiling filters regexps loaded from '%s'", filename)
+	nbRegexp := 0
 	for _, c := range *criterias {
-		log.Tracef("compiling Regexp [%s]", c.FileRE)
-		c.Regexp, err = regexp.Compile(c.FileRE)
-		if err != nil {
-			return fmt.Errorf("invalid regexp in flag list '%s': [%s]", filename, c.FileRE)
+		if c.FileRE != "" {
+			log.Tracef("compiling regexp [%s]", c.FileRE)
+			c.Regexp, err = regexp.Compile(c.FileRE)
+			if err != nil {
+				return fmt.Errorf("invalid regexp in flag list '%s': [%s]", filename, c.FileRE)
+			}
+			nbRegexp += 1
+			log.Tracef("compiled regexp [%v]", c.Regexp)
 		}
-
 	}
+	log.Tracef("%d filters regexps compiled from '%s'", nbRegexp, filename)
 
 	return nil
 }
@@ -87,7 +93,7 @@ func (f *Filter) LoadLists(whiteFilename string, blackFilename string) error {
 	}
 
 	if blackFilename != "" {
-		utils.PrintAndLog(log.InfoLevel, "Blacklist file: %s", whiteFilename)
+		utils.PrintAndLog(log.InfoLevel, "Blacklist file: %s", blackFilename)
 		csv_err := f.LoadBlacklistCSV(blackFilename)
 		if csv_err != nil {
 			log.Errorf("Failed to load post processing blacklist from '%s': %s", blackFilename, csv_err.Error())

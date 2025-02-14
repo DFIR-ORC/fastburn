@@ -14,22 +14,33 @@ import (
 )
 
 func (c *criteriaEntry) Match(sha256 string, sha1 string, md5 string, fullname string) bool {
-	log.Trace("Trying to match sha256:" + sha256 + " sha1:" + sha1 + " md5:" + md5 + " filename" + fullname)
-	log.Trace("With sha256:" + c.SHA256 + " sha1:" + c.SHA1 + " md5:" + c.MD5 + " filere" + c.FileRE)
+	log.Tracef("Trying to match sha256:'%s' sha1:'%s' md5:'%s' filename:'%s'", sha256, sha1, md5, fullname)
+	log.Tracef("With sha256:'%s' sha1:'%s' md5:'%s' filere:[%s]", sha256, sha1, md5, c.FileRE)
 	if c.SHA256 != "" && strings.EqualFold(c.SHA256, sha256) {
 		return true
+	} else {
+		log.Trace("no sha256 to match")
 	}
 	if c.SHA1 != "" && strings.EqualFold(c.SHA1, sha1) {
 		return true
+	} else {
+		log.Trace("no sha1 to match")
 	}
+
 	if c.MD5 != "" && strings.EqualFold(c.MD5, md5) {
 		return true
+	} else {
+		log.Trace("no md5 to match")
 	}
 	if c.Regexp != nil {
 		matched := c.Regexp.MatchString(fullname)
 		if matched {
 			return true
+		} else {
+			log.Tracef("path '%s' does not match regexp [%s]", fullname, c.Regexp)
 		}
+	} else {
+		log.Trace("no regexp to match")
 	}
 	return false
 }

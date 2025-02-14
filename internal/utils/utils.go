@@ -14,7 +14,7 @@ import (
 func isDir(filename string) (bool, error) {
 	fi, err := os.Stat(filename)
 	if err != nil {
-		log.Warning(fmt.Sprintf("Failed to stats '%s': %s", filename, err.Error()))
+		log.Warningf("Failed to stats '%s': %s", filename, err.Error())
 		return false, err
 	}
 	if fi.Mode().IsDir() {
@@ -27,7 +27,7 @@ func isDir(filename string) (bool, error) {
 func isArchive(filename string) (bool, error) {
 	fi, err := os.Stat(filename)
 	if err != nil {
-		log.Warning(fmt.Sprintf("Failed to stats '%s': %s", filename, err.Error()))
+		log.Warningf("Failed to stats '%s': %s", filename, err.Error())
 		return false, err
 	}
 	if fi.Mode().IsRegular() && strings.HasSuffix(filename, ".7z") {
@@ -42,7 +42,7 @@ func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
 	files := []string{}
 	var err error
 	for _, filename := range filenames {
-		log.Trace(fmt.Sprintf("Examining : '%s'", filename))
+		log.Tracef("Examining : '%s'", filename)
 		isdir, err := isDir(filename)
 		if err != nil {
 			log.Errorf("Failed to examine '%s'", filename)
@@ -50,19 +50,19 @@ func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
 		} else {
 			if isdir {
 				// directory, globing files
-				log.Trace(fmt.Sprintf("Exploring directory : '%s'", filename))
+				log.Tracef("Exploring directory : '%s'", filename)
 				dirfiles := []string{}
 				subdirs := []string{}
 				err := filepath.Walk(filename,
 					func(path string, info os.FileInfo, err error) error {
 						if path != filename {
-							log.Trace(fmt.Sprintf("Walking into '%s'", path))
+							log.Tracef("Walking into '%s'", path)
 							isdir, _ := isDir(path)
 							isarc, _ := isArchive(path)
 							if isdir {
 								subdirs = append(subdirs, path)
 							} else if isarc {
-								log.Trace(fmt.Sprintf("Adding subdir archive %s", path))
+								log.Tracef("Adding subdir archive %s", path)
 								dirfiles = append(dirfiles, path)
 							}
 						}
@@ -74,7 +74,7 @@ func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
 				if len(subdirs) > 0 {
 					subfiles, err := ExpandArchiveFilePaths(subdirs)
 					if err != nil {
-						log.Warning(fmt.Sprintf("Failed to process subdirs: %v", err))
+						log.Warningf("Failed to process subdirs: %v", err)
 						return nil, err
 					}
 					log.Trace("Appending dir parsing result")
@@ -86,15 +86,15 @@ func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
 				if err != nil {
 					log.Warningf("Failed to examine '%s'", filename)
 				} else if isarc {
-					log.Trace(fmt.Sprintf("Adding archive %s", filename))
+					log.Tracef("Adding archive %s", filename)
 					files = append(files, filename)
 				} else {
-					log.Trace(fmt.Sprintf("Skipping '%s': neither an archive nor a directory", filename))
+					log.Tracef("Skipping '%s': neither an archive nor a directory", filename)
 				}
 			}
 		}
 	}
-	log.Trace(fmt.Sprintf("Examination of %v returned %d results", filenames, len(files)))
+	log.Tracef("Examination of %v returned %d results", filenames, len(files))
 	files = Uniq(files)
 	return files, err
 }

@@ -34,19 +34,20 @@ type Filter struct {
 }
 
 func loadCSVCriterias(filename string, criterias *[]criteriaEntry) error {
+	log.Debugf("Loading filters from %s", filename)
 	f, err := os.Open(filename)
 	if err != nil {
-		log.Debug(fmt.Sprintf("Failed to load filters from '%s': %s", filename, err.Error()))
+		log.Debugf("Failed to load filters from '%s': %s", filename, err.Error())
 		return err
 	}
 	defer f.Close()
 
 	err = csv.UnmarshalFile(f, criterias)
 	if err != nil {
-		log.Debug(fmt.Sprintf("Failed to load filters from '%s': %s", filename, err.Error()))
+		log.Debugf("Failed to load filters from '%s': %s", filename, err.Error())
 		return err
 	}
-	log.Debug(fmt.Sprintf("%d values loaded from %s", len(*criterias), filename))
+	log.Debugf("%d values loaded from %s", len(*criterias), filename)
 
 	for _, c := range *criterias {
 		log.Tracef("compiling Regexp [%s]", c.FileRE)
@@ -61,14 +62,14 @@ func loadCSVCriterias(filename string, criterias *[]criteriaEntry) error {
 }
 
 func (f *Filter) LoadWhitelistCSV(filename string) error {
-	log.Debug(fmt.Sprintf("Loading Postprocessing filter from '%s'", filename))
+	log.Debugf("Loading Postprocessing filter from '%s'", filename)
 	f.whitelistFilename = filename
 
 	return loadCSVCriterias(filename, &f.whitelistCriteria)
 }
 
 func (f *Filter) LoadBlacklistCSV(filename string) error {
-	log.Debug(fmt.Sprintf("Loading Blacklist filter from '%s'", filename))
+	log.Debugf("Loading Blacklist filter from '%s'", filename)
 	f.blacklistFilename = filename
 
 	return loadCSVCriterias(filename, &f.blacklistCriteria)

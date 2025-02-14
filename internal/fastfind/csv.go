@@ -31,7 +31,7 @@ func ExportMatchesToCSV(filename string, matches *FastFindMatchesList, isInfecte
 		"VolumeID", "SnapshotID",
 		"ArchiveName"})
 	if err != nil {
-		log.Error(fmt.Sprintf("Failed to write to CSV file '%s': %v", filename, err))
+		log.Errorf("Failed to write to CSV file '%s': %v", filename, err)
 	}
 
 	// processing results
@@ -51,7 +51,7 @@ func ExportMatchesToCSV(filename string, matches *FastFindMatchesList, isInfecte
 			m.ArchiveName,
 		})
 		if err != nil {
-			log.Error(fmt.Sprintf("Failed to match write to CSV file '%s': %v", filename, err))
+			log.Errorf("Failed to match write to CSV file '%s': %v", filename, err)
 		}
 	}
 	w.Flush()
@@ -75,7 +75,7 @@ func ExportComputersToCSV(filename string, computers *FastFindComputersList) err
 		"Computer", "ComputerRole", "ComputerOS", "ORCVersion",
 		"NbMatches", "ArchiveName"})
 	if err != nil {
-		log.Error(fmt.Sprintf("Failed to write to CSV file '%s': %v", filename, err))
+		log.Errorf("Failed to write to CSV file '%s': %v", filename, err)
 	}
 
 	// processing results
@@ -86,7 +86,7 @@ func ExportComputersToCSV(filename string, computers *FastFindComputersList) err
 			c.Hostname, c.Role, c.OS, c.ORCVersion,
 			fmt.Sprintf("%v", c.NbMatches), c.ArchiveName})
 		if err != nil {
-			log.Error(fmt.Sprintf("Failed to computer write to CSV file '%s': %v", filename, err))
+			log.Errorf("Failed to computer write to CSV file '%s': %v", filename, err)
 		}
 	}
 	w.Flush()

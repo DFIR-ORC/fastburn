@@ -44,9 +44,9 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 	var mainLogFile string
 	for _, e := range archive.Entries {
 		isEmocheck := IsEmocheckResult(e.Path)
-		log.Trace(fmt.Sprintf(
+		log.Tracef(
 			"Archive content name: %s, size: %d is_emocheck:%v",
-			e.Path, e.Size, isEmocheck))
+			e.Path, e.Size, isEmocheck)
 
 		if e.Path == "FastFind.log" {
 			mainLogFile = e.Path
@@ -75,9 +75,9 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 	// decompress to in-memory buffer for result file
 	resultData, err := readFileContentFromArchiveLZMADec(archive, resultsFname)
 	if err != nil {
-		log.Error(fmt.Sprintf(
+		log.Errorf(
 			"Failed to decompress '%s' from archive '%s' with failed with :%s",
-			resultsFname, fname, err.Error()))
+			resultsFname, fname, err.Error())
 		return matches, computers, err
 	}
 

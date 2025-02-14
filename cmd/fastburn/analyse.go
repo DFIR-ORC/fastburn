@@ -44,7 +44,8 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 		} else {
 			c := computers[len(computers)-1]
 			stats.UpdateComputers(c)
-			log.Info("Host: '" + c.Hostname + "', File: '" + fname + "', matches: " + fmt.Sprintf("%v", c.NbMatches))
+
+			log.Infof("Host: '%s', File: '%s', matches: %v", c.Hostname, fname, c.NbMatches)
 			fmt.Printf(rowfmt, c.Hostname, strconv.FormatUint(uint64(c.NbMatches), 10), fname)
 		}
 	} //eo foreach filename
@@ -56,7 +57,7 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 
 // analyseData - process the collected data in memory
 func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesStats, postfilter *filter.Filter) (*fbn.FastFindTimeline, error) {
-	log.Debug(fmt.Sprintf("Post-processing %v results", len(*matches)))
+	log.Debugf("Post-processing %v results", len(*matches))
 	var blacklistCount uint64 = 0
 	var whitelistCount uint64 = 0
 	timeline := fbn.InitTL()

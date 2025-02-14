@@ -33,7 +33,7 @@ func (bit *EmocheckBoolean) UnmarshalJSON(data []byte) error {
 	asString := string(data)
 	var err error
 
-	log.Trace(fmt.Sprintf("Converting to bool: string %s", asString))
+	log.Tracef("Converting to bool: string %s", asString)
 	asString = trimQuotes(asString)
 	if asString == "yes" {
 		*bit = true
@@ -48,7 +48,7 @@ func (bit *EmocheckBoolean) UnmarshalJSON(data []byte) error {
 			*bit = true
 		}
 	}
-	log.Trace(fmt.Sprintf("Converted bool: string '%s', bool %v", asString, *bit))
+	log.Tracef("Converted bool: string '%s', bool %v", asString, *bit)
 	return err
 }
 

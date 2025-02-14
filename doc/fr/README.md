@@ -38,7 +38,8 @@ make
 ## Usage
 ```
 fbn [--debug|--trace] [--whitelist <whitelist.csv>] [--blacklist <blacklist.csv>]
-[-output <output file>] [-computers list.csv]  [-html] <7zArchive1 ... n>
+[-output <output file>] [-computers list.csv]  [-html] <fichiers>
+
 
 Detailed usage:
 
@@ -62,6 +63,8 @@ Detailed usage:
         Afficher la version
   -whitelist string
         Spécifier un fichier CSV contenant les drapeaux à mettre en évidence dans les résultats
+  <fichiers>
+        Un ou plusieurs fichier(s) d'archive 7z ou un dossier les contenant
 ```
 
 Exemple d'exécution de la ligne de commande

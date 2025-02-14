@@ -19,7 +19,7 @@ fbn is designed to be used from the command line (Windows or Linux) and generate
       [-whitelist <whitelist.csv>] [-blacklist <blacklist.csv>]
       [-output <output file>] [-computers <machine list file>]
       [-timeline <timeline file>] [-html]
-      <7zArchive1 ... n>
+      <files>
 ```
 
 #### Output files
@@ -41,6 +41,7 @@ fbn is designed to be used from the command line (Windows or Linux) and generate
 * `computers`: allows you to force the name of the file summarizing the list of machines found in the processed archives
 * `timeline`: allows you to force the timeline file name
 * `html`: enable the output of an HTML report
+* `files`: list of 7z archive files or folder containing them
 
 The format of whitelist and blacklist files is the same. It is documented in the “Flags file format” section below.
 

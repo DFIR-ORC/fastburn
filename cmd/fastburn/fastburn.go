@@ -89,13 +89,14 @@ func main() {
 
 	args := flag.Args()
 
-	if len(args) == 0 {
-		PrintUsage()
+	if *versionFlag {
+		version := Version()
+		fmt.Printf("Fastburnt - version: %s\n", version)
 		os.Exit(0)
 	}
 
-	if *versionFlag {
-		fmt.Printf("Fastburnt - version:%s\n", Version())
+	if len(args) == 0 {
+		PrintUsage()
 		os.Exit(0)
 	}
 

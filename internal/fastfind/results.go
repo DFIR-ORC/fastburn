@@ -82,7 +82,23 @@ type FastFindResultNg struct {
 		FSMatches []FastFind_FileMatch `xml:"filefind_match"`
 	} `xml:"filesystem"`
 	Registry struct {
-		Hive []FastFind_Hive `xml:"hive"`
+		Hive []struct {
+			VolumeID   string `xml:"volume_id,attr"`
+			SnapshotID string `xml:"snapshot_id,attr"`
+			HivePath   string `xml:"hive_path,attr"`
+			RegMatches []struct {
+				Description string `xml:"description,attr"`
+				Values      []struct {
+					Key             string `xml:"key,attr"`
+					SubkeysCount    uint   `xml:"subkeys_count,attr"`
+					ValuesCount     uint   `xml:"values_count,attr"`
+					Value           string `xml:"value,attr"`
+					Type            string `xml:"type,attr"`
+					Size            uint64 `xml:"size,attr"`
+					LastmodifiedKey string `xml:"lastmodified_key,attr"`
+				} `xml:"key"`
+			} `xml:"regfind_match"`
+		} `xml:"hive"`
 	} `xml:"registry"`
 	Object struct {
 		ObjectMatches []FastFind_FileMatch `xml:"object_match"`

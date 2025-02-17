@@ -7,12 +7,15 @@ import (
 )
 
 func processFFResultsNG(fname string, orcVersion string, resultData []byte, matches []*FastFindMatch, computers []*FastFindComputer) ([]*FastFindMatch, []*FastFindComputer, error) {
+	log.Tracef("Processing FF results modern format (v:%s)", orcVersion)
+
 	// parsing a FastFind XML result
 	var results FastFindResultNg
 	xml.Unmarshal(resultData, &results)
 
 	c := createFastFindComputer(fname, results.Computer, results.OS, results.Role, orcVersion)
 
+	log.Trace("Processing filesystem matches")
 	var nbm uint
 	matches, nbm = recordFilesystemMatches(
 		fname,
@@ -20,20 +23,36 @@ func processFFResultsNG(fname string, orcVersion string, resultData []byte, matc
 		results.Filesystem.FSMatches,
 		matches)
 	c.NbMatches += nbm
+	log.Tracef("%d filesystem matches found", nbm)
 
+	log.Trace("Processing registry matches")
+	var nreg uint
 	for _, hive := range results.Registry.Hive {
+		log.Tracef("Hivepath: %s", hive.HivePath)
+
 		for _, match := range hive.RegMatches {
-			for _, value := range match.Values {
-				matches, nbm = recordRegMatch(
+			description := match.Description
+			for _, k := range match.Values {
+				log.Tracef("Description:'%s' Key [%s] (lastmodif:%v subkeycount:%v valcount:%v)",
+					description,
+					k.Key,
+					k.LastmodifiedKey, k.SubkeysCount, k.ValuesCount)
+
+				matches, nbm = recordRegMatchNG(
 					fname,
 					results.Computer, results.OS, results.Role, orcVersion,
 					hive.HivePath, hive.VolumeID, hive.SnapshotID,
-					match.Description,
-					value, matches)
+					description,
+					k.Key, k.Value, k.Type, k.Size,
+					k.LastmodifiedKey, k.SubkeysCount, k.ValuesCount,
+					matches)
+
 				c.NbMatches += nbm
+				nreg += nbm
 			}
 		}
 	}
+	log.Tracef("%d registries matches found", nreg)
 
 	computers = append(computers, &c)
 	log.Debugf("Processing result: File '%s', Hostname %s matches: %v ",

@@ -12,14 +12,48 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func recordRegMatch(
+func recordRegMatchNG(
+	fname string, computer string, os string, role string, orcVersion string,
+	hivepath string, volumeid string, snapshotid string,
+	description string,
+	key string, value string, rtype string, size uint64,
+	lastModifiedKey string, subkeysCount uint, valuesCount uint,
+	matches []*FastFindMatch) ([]*FastFindMatch, uint) {
+
+	var nbmatches uint = 0
+	log.Tracef("Recording RegMatch '%s' subkeys_count:%d values_count:%d", hivepath, subkeysCount, valuesCount)
+	m := FastFindMatch{
+		Kind:             RegistryMatchType,
+		Fullname:         hivepath,
+		Reason:           description,
+		Computer:         computer,
+		ComputerOS:       os,
+		ComputerRole:     role,
+		ORCVersion:       orcVersion,
+		VolumeID:         volumeid,
+		SnapshotID:       snapshotid,
+		LastModification: lastModifiedKey,
+		Size:             size,
+		RegKey:           key,
+		RegType:          rtype,
+		RegValue:         value,
+		ArchiveName:      fname}
+
+	if m.RegKey != "" || m.RegValue != "" {
+		matches = append(matches, &m)
+		nbmatches++
+	}
+	return matches, nbmatches
+}
+
+func recordRegMatchLegacy(
 	fname string, computer string, os string, role string, orcVersion string,
 	hivepath string, volumeid string, snapshotid string,
 	description string, value FastFind_RegValue,
 	matches []*FastFindMatch) ([]*FastFindMatch, uint) {
 
 	var nbmatches uint = 0
-
+	log.Tracef("Recording RegMatch '%s'", hivepath)
 	m := FastFindMatch{
 		Kind:             RegistryMatchType,
 		Fullname:         hivepath,
@@ -43,6 +77,7 @@ func recordRegMatch(
 	}
 	return matches, nbmatches
 }
+
 func recordFilesystemMatches(
 	fname string, computer string, os string, role string, orcVersion string,
 	fsmatches []FastFind_FileMatch, matches []*FastFindMatch) ([]*FastFindMatch, uint) {
@@ -115,6 +150,7 @@ func recordFilesystemMatches(
 			m.ParentFrn = i30.Parentfrn
 		}
 		//adding entry
+		log.Tracef("Recording FsMatch '%s'", m.Fullname)
 		matches = append(matches, &m)
 		nbmatches += 1
 	}

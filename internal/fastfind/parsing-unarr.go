@@ -74,7 +74,7 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 			emocheckFile, fname, err)
 		return matches, computers, err
 	}
-	log.Debug("Orc version: " + orcVersion)
+	log.Debugf("Orc version: %s (modern:%v)", orcVersion, isModern)
 
 	/////////// Process FastFind_Result.xml
 

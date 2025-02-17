@@ -68,7 +68,7 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 			fname, err)
 		return matches, computers, err
 	}
-	log.Debug("Orc version: " + orcVersion)
+	log.Debugf("Orc version: %s (modern:%v)", orcVersion, isModern)
 
 	/////////// Process FastFind_Result.xml
 

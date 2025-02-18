@@ -29,7 +29,7 @@ func ExportMatchesToCSV(filename string, matches *FastFindMatchesList, isInfecte
 		"FilenameCreation", "FilenameLastModification", "FilenameLastEntryChange", "FilenameLastAccess",
 		"AltFilenameCreation", "AltFilenameLastModification", "AltFilenameLastEntryChange", "AltFilenameLastAccess",
 		"VolumeID", "SnapshotID",
-		"ArchiveName"})
+		"ArchiveName", "IgnoreReason"})
 	if err != nil {
 		log.Errorf("Failed to write to CSV file '%s': %v", filename, err)
 	}

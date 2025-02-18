@@ -33,7 +33,7 @@ Show ignored entries <input class='dpcontrol' type='checkbox'>
         </tr>
     </thead>
     <tbody>{{ range .Matches }}
-         {{ if .Ignore }}<tr class="ignore">	{{ else }}<tr class="match">{{end}}
+         {{ if .Ignore }}<tr class="ignore" title="ignored reason: {{ .IgnoreReason}}">	{{ else }}<tr class="match">{{end}}
             <td> {{ .Computer }} </td>
             <td> {{ .ComputerRole }} </td>
             <td> {{ .ComputerOS }} </td>

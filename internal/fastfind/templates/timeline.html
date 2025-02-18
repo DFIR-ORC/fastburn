@@ -19,7 +19,7 @@ Show ignored entries <input class='dpcontrol' type='checkbox'>
     </thead>
     <tbody>    
     {{ range $event :=  .Timeline.SortedEvents  }}
-    {{ if $event.Match.Ignore }}<tr class="ignore">	{{ else }}<tr class="match">{{end}}    
+    {{ if $event.Match.Ignore }}<tr class="ignore" title="ignored reason: {{ $event.Match.IgnoreReason }}">	{{ else }}<tr class="match">{{end}}    
         <td> {{ $event.Timestamp }}</td>
         <td> {{ $event.SIMACB }}</td>
         <td> {{ $event.FNMACB  }}</td>

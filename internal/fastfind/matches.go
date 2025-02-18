@@ -52,6 +52,7 @@ type FastFindMatch struct {
 	SHA256                      string
 	ArchiveName                 string
 	Ignore                      bool
+	IgnoreReason                string
 }
 
 type FastFindMatchesList []*FastFindMatch

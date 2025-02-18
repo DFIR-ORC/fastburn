@@ -203,7 +203,7 @@ It must contain the following columns (even if empty):
 * `sha1` - condensate
 * `md5` - condensate
 * `file_re` - REGEXP to be applied to the file path
-* `description` - detection description
+* `reason` - detection description
 
 A detection corresponds to a “flag” line if any of the markers match.
 The `file_re` criterion is applied to the `Fullname` field of the result file.

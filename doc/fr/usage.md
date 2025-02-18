@@ -214,7 +214,7 @@ Il doit contenir les colonnes suivantes (même vides) :
 * `sha1`        - condensat
 * `md5`         - condensat
 * `file_re`     - REGEXP à appliquer sur le chemin de fichier
-* `description` - description de la détection
+* `reason` - description de la détection
 
 Une détection correspond a une ligne de "flag" si n'importe lequel des marqueurs correspond.
 Le critère `file_re` est appliqué sur le champ `Fullname` du fichier de résultat.

@@ -89,6 +89,7 @@ func analyseData(matches *fbn.FastFindMatchesList, stats *fbn.FastFindMatchesSta
 		blacklisted, reason := postfilter.IsBlacklisted(m)
 		if blacklisted {
 			m.Ignore = true
+			m.IgnoreReason = reason
 			blacklistCount = blacklistCount + 1
 			log.Debugf("Blacklisted entry %s: %s", m.URI(), reason)
 		}

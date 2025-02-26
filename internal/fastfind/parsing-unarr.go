@@ -41,7 +41,6 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 	defer archive.Close()
 
 	/////////// List all files inside archive
-	var emocheckFile string
 	var mainLogFile string
 	files, err := archive.List()
 	if err != nil {
@@ -49,11 +48,8 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 		return matches, computers, err
 	}
 	for _, e := range files {
-		isemocheck := IsEmocheckResult(e)
-		log.Tracef("Archive content name: %s, is_emocheck:%v", e, isemocheck)
-		if isemocheck {
-			emocheckFile = e
-		}
+
+		log.Tracef("Archive content name: %s", e)
 		if e == "FastFind.log" {
 			mainLogFile = e
 		}
@@ -70,8 +66,7 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 	orcVersion, isModern, err := scanORCVersion(string(mainLogContent))
 	if err != nil {
 		log.Errorf(
-			"Failed to decompress '%s' from archive '%s' with failed with :%v",
-			emocheckFile, fname, err)
+			"Failed to decompress '%v' from archive '%s' with failed with :%v", mainLogContent, fname, err)
 		return matches, computers, err
 	}
 	log.Debugf("Orc version: %s (modern:%v)", orcVersion, isModern)
@@ -83,7 +78,7 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 	if err != nil {
 		log.Error(fmt.Sprintf(
 			"Failed to decompress '%s' from archive '%s' with failed with :%s",
-			emocheckFile, fname, err.Error()))
+			resultsFname, fname, err.Error()))
 		return matches, computers, err
 	}
 

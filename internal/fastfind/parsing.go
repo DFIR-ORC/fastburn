@@ -12,16 +12,31 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+/*
+fname,
+					results.Computer, results.OS, results.Role, orcVersion,
+					hive.HivePath, hive.VolumeID, hive.SnapshotID,
+					description,
+					k.Key, k.Value, k.Type, k.DataSize,
+					subkeys coun, values count,
+					k.LastmodifiedKey,
+					matches)
+
+*/
+
 func recordRegMatchNG(
-	fname string, computer string, os string, role string, orcVersion string,
+	fname string,
+	computer string, os string, role string, orcVersion string,
 	hivepath string, volumeid string, snapshotid string,
 	description string,
 	key string, value string, rtype string, size uint64,
-	lastModifiedKey string, subkeysCount uint, valuesCount uint,
+	subkeysCount uint, valuesCount uint,
+	lastModifiedKey string,
 	matches []*FastFindMatch) ([]*FastFindMatch, uint) {
 
 	var nbmatches uint = 0
-	log.Tracef("Recording RegMatch '%s' subkeys_count:%d values_count:%d", hivepath, subkeysCount, valuesCount)
+	log.Tracef("Recording modern RegMatch '%s' / key '%s' / value  '%v' (type:%s subkeys_count:%d values_count:%d size:%d)",
+		hivepath, key, value, rtype, subkeysCount, valuesCount, size)
 	m := FastFindMatch{
 		Kind:             RegistryMatchType,
 		Fullname:         hivepath,
@@ -53,7 +68,8 @@ func recordRegMatchLegacy(
 	matches []*FastFindMatch) ([]*FastFindMatch, uint) {
 
 	var nbmatches uint = 0
-	log.Tracef("Recording RegMatch '%s'", hivepath)
+	log.Tracef("Recording legacy RegMatch '%s' / value  '%v'", hivepath, value)
+
 	m := FastFindMatch{
 		Kind:             RegistryMatchType,
 		Fullname:         hivepath,

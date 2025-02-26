@@ -43,10 +43,9 @@ func ProcessFileLZMADec(fname string, matches []*FastFindMatch, computers []*Fas
 	/////////// List all files inside archive
 	var mainLogFile string
 	for _, e := range archive.Entries {
-		isEmocheck := IsEmocheckResult(e.Path)
+
 		log.Tracef(
-			"Archive content name: %s, size: %d is_emocheck:%v",
-			e.Path, e.Size, isEmocheck)
+			"Archive content name: %s, size: %d ", e.Path, e.Size)
 
 		if e.Path == "FastFind.log" {
 			mainLogFile = e.Path

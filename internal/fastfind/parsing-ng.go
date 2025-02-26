@@ -27,13 +27,33 @@ func processFFResultsNG(fname string, orcVersion string, resultData []byte, matc
 
 	log.Trace("Processing registry matches")
 	var nreg uint
-	for _, hive := range results.Registry.Hive {
+	for _, hive := range results.Registry.Hives {
 		log.Tracef("Hivepath: %s", hive.HivePath)
 
-		for _, match := range hive.RegMatches {
+		for _, match := range hive.RegfindMatches {
 			description := match.Description
 			for _, k := range match.Values {
-				log.Tracef("Description:'%s' Key [%s] (lastmodif:%v subkeycount:%v valcount:%v)",
+				log.Tracef("Description:'%s' Key [%s] Value[%s] (lastmodif:%v type:%v size:%d)",
+					description,
+					k.Key, k.Value,
+					k.LastmodifiedKey, k.Type, k.DataSize,
+				)
+
+				matches, nbm = recordRegMatchNG(
+					fname,
+					results.Computer, results.OS, results.Role, orcVersion,
+					hive.HivePath, hive.VolumeID, hive.SnapshotID,
+					description,
+					k.Key, k.Value, k.Type, k.DataSize,
+					0 /*subkeys count*/, 0, /*values count*/
+					k.LastmodifiedKey,
+					matches)
+
+				c.NbMatches += nbm
+				nreg += nbm
+			}
+			for _, k := range match.Keys {
+				log.Tracef("Description:'%s' Key [%s] (lastmodif:%s subkeycount:%d valcount:%d)",
 					description,
 					k.Key,
 					k.LastmodifiedKey, k.SubkeysCount, k.ValuesCount)
@@ -43,8 +63,9 @@ func processFFResultsNG(fname string, orcVersion string, resultData []byte, matc
 					results.Computer, results.OS, results.Role, orcVersion,
 					hive.HivePath, hive.VolumeID, hive.SnapshotID,
 					description,
-					k.Key, k.Value, k.Type, k.Size,
-					k.LastmodifiedKey, k.SubkeysCount, k.ValuesCount,
+					k.Key, "" /*Value*/, "" /*Type*/, 0, /*Size*/
+					k.SubkeysCount, k.ValuesCount,
+					k.LastmodifiedKey,
 					matches)
 
 				c.NbMatches += nbm

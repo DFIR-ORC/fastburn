@@ -42,14 +42,14 @@ Show ignored entries <input class='dpcontrol' type='checkbox'>
             <td> {{ .ORCVersion }} </td>
             <td> {{ printf "%s" .Kind }} </td>
             <td> {{ .Reason }} </td>
-            <td> {{ .URI }} </td>
-            <td> {{ .RegValue }}</td>
+            <td class="code"> {{ .URI }} </td>
+            <td class="code"> {{ .RegValue }}</td>
             <td> {{ .RegType }}</td>            
             <td> {{ .AltFilename }} </td>
-            <td> {{ .Size }} </td>
-            <td> {{ .MD5 }} </td>
-            <td> {{ .SHA1 }} </td>
-            <td> {{ .SHA256 }} </td>
+            <td class="numval"> {{ .Size }} </td>
+            <td class="code"> {{ .MD5 }} </td>
+            <td class="code"> {{ .SHA1 }} </td>
+            <td class="code"> {{ .SHA256 }} </td>
             <td> {{ .Creation }} </td>
             <td> {{ .LastModification }} </td>
             <td> {{ .LastEntryChange }} </td>
@@ -64,7 +64,7 @@ Show ignored entries <input class='dpcontrol' type='checkbox'>
             <td> {{ .AltFilenameLastAccess }} </td>
             <td> {{ .VolumeID }} </td>
             <td> {{ .SnapshotID }} </td>
-            <td> {{ .ArchiveName }} </td>
+            <td class="code"> {{ .ArchiveName }} </td>
         </tr>{{ end }}
     </tbody>
 </table>

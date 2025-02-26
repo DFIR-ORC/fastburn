@@ -10,8 +10,10 @@ Show ignored entries <input class='dpcontrol' type='checkbox'>
             <th>MatchType</th>
             <th>Reason</th>
             <th>URI</th>
+            <th>RegValue</th>
+            <th>RegType</th>
             <th>AltName</th>
-            <th>FileSize</th>
+            <th>Size</th>
             <th>MD5</th>
             <th>SHA1</th>
             <th>SHA256</th>
@@ -41,6 +43,8 @@ Show ignored entries <input class='dpcontrol' type='checkbox'>
             <td> {{ printf "%s" .Kind }} </td>
             <td> {{ .Reason }} </td>
             <td> {{ .URI }} </td>
+            <td> {{ .RegValue }}</td>
+            <td> {{ .RegType }}</td>            
             <td> {{ .AltFilename }} </td>
             <td> {{ .Size }} </td>
             <td> {{ .MD5 }} </td>

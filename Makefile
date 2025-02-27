@@ -1,5 +1,5 @@
 PROJECT_NAME := "fastburn"
-PKG := "fastburn/cmd/fastburn"
+PKG := "fastburn/cmd/fastburn" 
 PLATFORMS := linux windows
 ARCHITECTURES := 386 amd64
 BINARY := fbn
@@ -35,6 +35,9 @@ ifeq ($(OS),Windows_NT)
 else
 	go build -o ${BINARY} ${LDFLAGS} -v $(PKG)
 endif
+
+decrypt:  dep
+	go build ${LDFLAGS} -v "fastburn/cmd/fastdecrypt"
 
 clean: ## Remove previous build
 	rm -f $(BINARY)

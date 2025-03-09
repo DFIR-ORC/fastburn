@@ -24,46 +24,71 @@ func isDir(filename string) (bool, error) {
 
 }
 
-func isArchive(filename string) (bool, error) {
+func isDataFileWithExtension(filename string, extensions []string) (bool, string, error) {
 	fi, err := os.Stat(filename)
 	if err != nil {
 		log.Warningf("Failed to stats '%s': %s", filename, err.Error())
-		return false, err
+		return false, "", err
 	}
-	if fi.Mode().IsRegular() && strings.HasSuffix(filename, ".7z") {
-		return true, nil
+	if fi.Mode().IsRegular() {
+		for _, ext := range extensions {
+			if strings.HasSuffix(strings.ToUpper(filename), strings.ToUpper(ext)) {
+				return true, ext, nil
+			}
+		}
 	}
-	return false, nil
+	return false, "", nil
 }
 
-// ExpandArchiveFilepath - take a filelist, descend in directories, and returns a list of 7z files
-func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
+func isArchive(filename string) (bool, string, error) {
+	extensions := []string{"7z", "p7b"}
+	return isDataFileWithExtension(filename, extensions)
+}
 
-	files := []string{}
+// ExpandArchiveFilepath - take a filelist, descend in directories, and returns a list of 7z archives and a list of p7b containers
+func ExpandArchiveFilePaths(filenames []string) ([]string, []string, error) {
+
+	archives := []string{}
+	containers := []string{}
 	var err error
 	for _, filename := range filenames {
 		log.Tracef("Examining : '%s'", filename)
 		isdir, err := isDir(filename)
 		if err != nil {
 			log.Errorf("Failed to examine '%s'", filename)
-			return files, err
+			return archives, containers, err
 		} else {
+
 			if isdir {
 				// directory, globing files
 				log.Tracef("Exploring directory : '%s'", filename)
-				dirfiles := []string{}
+				dirArchives := []string{}
+				dirContainers := []string{}
 				subdirs := []string{}
 				err := filepath.Walk(filename,
 					func(path string, info os.FileInfo, err error) error {
 						if path != filename {
 							log.Tracef("Walking into '%s'", path)
-							isdir, _ := isDir(path)
-							isarc, _ := isArchive(path)
-							if isdir {
+							isDir, _ := isDir(path)
+							isArc, ext, err := isArchive(path)
+							if err != nil {
+								log.Warningf("Failed to examine '%s'", filename)
+							} else if isDir {
 								subdirs = append(subdirs, path)
-							} else if isarc {
-								log.Tracef("Adding subdir archive %s", path)
-								dirfiles = append(dirfiles, path)
+							} else if isArc {
+								switch ext {
+								case "7z":
+									log.Tracef("Adding subdir archive '%s'", path)
+									dirArchives = append(dirArchives, path)
+								case "p7b":
+									log.Tracef("Adding subdir encrypted archive '%s'", path)
+									dirContainers = append(dirContainers, path)
+								default:
+									log.Tracef("ignoring unsupported archive file type '%s'", path)
+								}
+
+							} else {
+								log.Tracef("ignoring non archive file '%s'", path)
 							}
 						}
 						return nil
@@ -72,31 +97,45 @@ func ExpandArchiveFilePaths(filenames []string) ([]string, error) {
 					log.Warningf("Failed to examine directory '%s'", filename)
 				}
 				if len(subdirs) > 0 {
-					subfiles, err := ExpandArchiveFilePaths(subdirs)
+					subArcs, subEncArcs, err := ExpandArchiveFilePaths(subdirs)
 					if err != nil {
 						log.Warningf("Failed to process subdirs: %v", err)
-						return nil, err
+						return nil, nil, err
 					}
 					log.Trace("Appending dir parsing result")
-					dirfiles = append(dirfiles, subfiles...)
+					dirArchives = append(dirArchives, subArcs...)
+					dirContainers = append(dirContainers, subEncArcs...)
 				}
-				files = append(files, dirfiles...)
+				// append recursion results
+				archives = append(archives, dirArchives...)
+				containers = append(containers, dirContainers...)
 			} else {
-				isarc, err := isArchive(filename)
+				isArc, ext, err := isArchive(filename)
 				if err != nil {
 					log.Warningf("Failed to examine '%s'", filename)
-				} else if isarc {
-					log.Tracef("Adding archive %s", filename)
-					files = append(files, filename)
+				} else if isArc {
+
+					switch ext {
+					case "7z":
+						log.Tracef("Adding subdir archive '%s'", filename)
+						archives = append(archives, filename)
+					case "p7b":
+						log.Tracef("Adding subdir encrypted archive '%s'", filename)
+						containers = append(containers, filename)
+					default:
+						log.Tracef("ignoring unsupported archive file type '%s'", filename)
+					}
+
 				} else {
 					log.Tracef("Skipping '%s': neither an archive nor a directory", filename)
 				}
 			}
 		}
 	}
-	log.Tracef("Examination of %v returned %d results", filenames, len(files))
-	files = Uniq(files)
-	return files, err
+	log.Tracef("Examination of %v returned %d results", filenames, len(archives))
+	archives = Uniq(archives)
+	containers = Uniq(containers)
+	return archives, containers, err
 }
 
 func Uniq(elements []string) []string {
@@ -152,8 +191,9 @@ func SetLogLevel(info bool, debug bool, trace bool) {
 	} else if info {
 		log.SetLevel(log.InfoLevel)
 	} else {
-		log.SetLevel(log.ErrorLevel)
+		log.SetLevel(log.WarnLevel)
 	}
+	log.Debugf("Log level is %s", log.GetLevel())
 }
 
 /*

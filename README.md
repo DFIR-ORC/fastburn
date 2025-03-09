@@ -54,8 +54,12 @@ Detailed usage:
         Specify computers listing filename
   -debug
         Enable debug mode
+  -info 
+        Enable info mode
   -html
         Enable HTML output
+  -key
+        Specify a private key path for encrypted archives decryption
   -output string
         Specify output filename
   -stats string
@@ -85,6 +89,14 @@ Example of command line execution
 ```
 
 See also [Advanced usage](doc/en/usage.md)
+
+
+## Warning
+
+Encrypted archive decryption is still experimental.
+
+You can alternatively use the project [ORC-DECRYPT](https://github.com/DFIR-ORC/orc-decrypt) to manually preprocess this kind of archive.
+
 
 ## License
 

@@ -12,6 +12,7 @@
 package fastfind
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -19,47 +20,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
-
-/*
- * IO Helper
- */
-
-// ReadSeeker implements io.ReadSeeker for a byte slice
-// This is used when we need to convert stdin (which doesn't support Seek) to a ReadSeeker
-type readSeeker struct {
-	data []byte
-	pos  int64
-}
-
-func (rs *readSeeker) Read(p []byte) (n int, err error) {
-	if rs.pos >= int64(len(rs.data)) {
-		return 0, io.EOF
-	}
-	n = copy(p, rs.data[rs.pos:])
-	rs.pos += int64(n)
-	return
-}
-
-func (rs *readSeeker) Seek(offset int64, whence int) (int64, error) {
-	var newPos int64
-	switch whence {
-	case io.SeekStart:
-		newPos = offset
-	case io.SeekCurrent:
-		newPos = rs.pos + offset
-	case io.SeekEnd:
-		newPos = int64(len(rs.data)) + offset
-	default:
-		return 0, fmt.Errorf("invalid seek whence: %d", whence)
-	}
-
-	if newPos < 0 {
-		return 0, fmt.Errorf("negative position")
-	}
-
-	rs.pos = newPos
-	return newPos, nil
-}
 
 /*
  * Constants and structures
@@ -113,7 +73,7 @@ func processStream(in io.ReadSeeker, out io.WriteSeeker) error {
 		return fmt.Errorf("unsupported journal version: got %d, expected %d", header.Version, JrnlVersion)
 	}
 
-	log.Debugf("Valid JRNL header found, version %d", header.Version)
+	log.Tracef("Unstream: Valid JRNL header found, version %d", header.Version)
 
 	// Process operations until CLOSE is encountered
 	buffer := make([]byte, BufferSize)
@@ -123,11 +83,11 @@ func processStream(in io.ReadSeeker, out io.WriteSeeker) error {
 			return fmt.Errorf("failed to read operation: %w", err)
 		}
 
-		log.Debugf("Read operation: %s", string(op.Magic[:]))
+		log.Tracef("Unstream: READ operation: %s", string(op.Magic[:]))
 
 		// Process operation based on magic value
 		if bytesEqual(op.Magic, MagicClose) {
-			log.Debug("CLOSE operation - processing complete")
+			log.Trace("Unstream: CLOSE operation - processing complete")
 			break
 		} else if bytesEqual(op.Magic, MagicSeek) {
 			whence := 0 // Default to SEEK_SET (io.SeekStart)
@@ -139,16 +99,16 @@ func processStream(in io.ReadSeeker, out io.WriteSeeker) error {
 			case 2:
 				whence = io.SeekEnd
 			default:
-				return fmt.Errorf("invalid seek mode: %d", op.Param)
+				return fmt.Errorf("unstream: invalid seek mode: %d", op.Param)
 			}
 
-			log.Debugf("SEEK operation: offset %d, mode %d", op.Length, op.Param)
+			log.Tracef("Unstream: SEEK operation: offset %d, mode %d", op.Length, op.Param)
 			if _, err := out.Seek(int64(op.Length), whence); err != nil {
 				return fmt.Errorf("seek operation failed: %w", err)
 			}
 		} else if bytesEqual(op.Magic, MagicWrite) {
 			remaining := op.Length
-			log.Debugf("WRITE operation: %d bytes", remaining)
+			log.Tracef("Unstream: WRITE operation: %d bytes", remaining)
 
 			for remaining > 0 {
 				bytesToRead := remaining
@@ -181,30 +141,20 @@ func processStream(in io.ReadSeeker, out io.WriteSeeker) error {
 }
 
 /*
- * Unstream receives a serialized
+ * Unstream receives a serialized filename and an output filename and converts the serialized file to a regular 7zip file
  */
 func Unstream(inputPath string, outputPath string) error {
 
 	var inputFile io.ReadSeeker
-	if inputPath == "-" {
-		// Since os.Stdin doesn't support Seek, we need to read it all into memory
-		data, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading from stdin: %v\n", err)
-			return err
-		}
-		inputFile = &readSeeker{data: data}
-		log.Debug("Using stdin for input")
-	} else {
-		var err error
-		inputFile, err = os.Open(inputPath)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error opening input file '%s': %v\n", inputPath, err)
-			return err
-		}
-		defer inputFile.(io.Closer).Close()
-		log.Debugf("Opened input file: %s", inputPath)
+
+	var err error
+	inputFile, err = os.Open(inputPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error opening input file '%s': %v\n", inputPath, err)
+		return err
 	}
+	defer inputFile.(io.Closer).Close()
+	log.Debugf("Opened input file: %s", inputPath)
 
 	// Open output file
 	outputFile, err := os.Create(outputPath)
@@ -221,7 +171,34 @@ func Unstream(inputPath string, outputPath string) error {
 		return err
 	}
 
-	log.Debug("Successfully converted journal stream '%s' to file '%s.", inputPath, outputPath)
+	log.Debugf("Successfully converted journal stream '%s' to file '%s.", inputPath, outputPath)
+
+	return err
+}
+
+/*
+ * Unstream receives serialized in a buffer and the output filename and converts the serialized file to a regular 7zip file
+ */
+func UnstreamBuffer(inputData []byte, outputPath string) error {
+
+	input := bytes.NewReader(inputData)
+
+	// Open output file
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating output file '%s': %v\n", outputPath, err)
+		return err
+	}
+	defer outputFile.Close()
+	log.Tracef("Opened output file: %s", outputPath)
+
+	// Process the file
+	if err := processStream(input, outputFile); err != nil {
+		fmt.Fprintf(os.Stderr, "Error processing stream: %v\n", err)
+		return err
+	}
+
+	log.Tracef("Successfully converted journal stream  to file '%s.", outputPath)
 
 	return err
 }

@@ -9,7 +9,7 @@ Build
 	make decrypt
 
 Test
-   ./fastdecrypt -input share/samples/encrypted_ff_sample/ORC_WorkStation_W11-22000-51_FastFind.7z.p7b -output share/samples/encrypted_ff_sample/ORC_WorkStation_W11-22000-51_FastFind.7zs -cert share/samples/encrypted_ff_sample/contoso.com.pem -key share/samples/encrypted_ff_sample/contoso.com.key -trace
+   ./fastdecrypt -input share/samples/encrypted_ff_sample/ORC_WorkStation_W11-22000-51_FastFind.7z.p7b -output share/samples/encrypted_ff_sample/ORC_WorkStation_W11-22000-51_FastFind.7zs -key share/samples/encrypted_ff_sample/contoso.com.key -trace
 
 
 **/
@@ -25,7 +25,7 @@ import (
 
 	_ "fastburn/cmd/fastburn/rsrc"
 
-	"github.com/cloudflare/cfssl/log"
+	log "github.com/sirupsen/logrus"
 )
 
 func Version() string {
@@ -70,53 +70,41 @@ func main() {
 
 	var outputFlag string
 	var inputFlag string
-	var certFlag string
 	var keyFlag string
 
 	flag.Usage = PrintUsage
 
-	infoFlag := flag.Bool("info", false, "Enable debug mode")
-	debugFlag := flag.Bool("debug", false, "Enable debug mode")
-	traceFlag := flag.Bool("trace", false, "Enable trace mode")
+	infoFlag := flag.Bool("info", false, "Enable info log level")
+	debugFlag := flag.Bool("debug", false, "Enable debug log level")
+	traceFlag := flag.Bool("trace", false, "Enable trace log level")
 	versionFlag := flag.Bool("version", false, "Show version and exit")
 
 	flag.StringVar(&inputFlag, "input", "", "Specify input filename")
 	flag.StringVar(&outputFlag, "output", "", "Specify output filename")
-	flag.StringVar(&certFlag, "cert", "", "Specify certificate filename (PEM format)")
 	flag.StringVar(&keyFlag, "key", "", "Specify key filename (PEM encoded non encrypted PKCS8 format)")
 
 	flag.Parse()
-
-	//args := flag.Args()
 
 	if *versionFlag {
 		version := Version()
 		fmt.Printf("Fastburnt - version: %s\n", version)
 		os.Exit(0)
 	}
-	/*
-		if len(args) != 0 {
-			PrintUsage()
-			os.Exit(0)
-		}*/
 
 	utils.SetLogLevel(*infoFlag, *debugFlag, *traceFlag)
 
-	streamFile := outputFlag + "s" // TODO generate a proper temporary path
-
-	err := fastfind.DecryptPKCS7Container(certFlag, keyFlag, inputFlag, streamFile)
+	clearText, err := fastfind.DecryptCMSData(keyFlag, inputFlag)
 	if err != nil {
-		log.Errorf("PKCS7 decryption of '%s' with key '%s' and certificate '%s' to '%s' failed: %v", inputFlag, keyFlag, certFlag, streamFile, err)
-		os.Exit(-1)
+		log.Fatalf("PKCS7 decryption of '%s' with key '%s' failed: %v",
+			inputFlag, keyFlag, err)
 	}
 
-	err = fastfind.Unstream(streamFile, outputFlag)
+	err = fastfind.UnstreamBuffer(clearText, outputFlag)
 	if err != nil {
-		log.Errorf("Stream deccoding of '%s' to '%s' failed: %v", inputFlag, streamFile, err)
-		os.Exit(-1)
+		log.Fatalf("Stream decoding to '%s' failed: %v", outputFlag, err)
 	}
 
-	log.Info("'%s' decrypted and streamed of  to '%s'", inputFlag, outputFlag)
+	log.Infof("'%s' decrypted and streamed of  to '%s'", inputFlag, outputFlag)
 }
 
 //eof

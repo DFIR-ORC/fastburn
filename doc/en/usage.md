@@ -18,7 +18,7 @@ fbn is designed to be used from the command line (Windows or Linux) and generate
    ./fbn [--debug|-trace]
       [-whitelist <whitelist.csv>] [-blacklist <blacklist.csv>]
       [-output <output file>] [-computers <machine list file>]
-      [-timeline <timeline file>] [-html]
+      [-timeline <timeline file>] [-key <keypath>] [-html]
       <files>
 ```
 
@@ -32,7 +32,7 @@ fbn is designed to be used from the command line (Windows or Linux) and generate
 **Note**  If a file is not a valid archive, it is ignored, but processing continues.
 
 #### Option details
-
+* `info` : activate the first level of traceability on STDERR 
 * `debug`: activates the second level of traceability on STDERR
 * `trace`: activates the maximum level of traceability on STDERR
 * `whitelist`: allows you to specify a file of markers to be highlighted
@@ -41,9 +41,12 @@ fbn is designed to be used from the command line (Windows or Linux) and generate
 * `computers`: allows you to force the name of the file summarizing the list of machines found in the processed archives
 * `timeline`: allows you to force the timeline file name
 * `html`: enable the output of an HTML report
+* `key`  : specify a private key path for encrypted archives decryption
 * `files`: list of 7z archive files or folder containing them
 
 The format of whitelist and blacklist files is the same. It is documented in the “Flags file format” section below.
+
+The private key expected format is PKCS#8 BER then PEM encoded.
 
 ### Example
 
@@ -80,7 +83,7 @@ Each line consists of the following fields:
 * `ComputerOS`: machine operating system
 * `ORCVersion`: version of DFIR-ORC on which the FastFind tool used was based
 * `MatchType`: type of detection that determined FastFind's input selection
-* Software
+* `Software`
 * `Reason`: criteria for which the entry was selected by FastFind
 * `Filename`: absolute path of the file
 * `AltName`: alternative file name
@@ -219,6 +222,17 @@ Match executables in the WinRAR installation directory regardless of case.
 ```
 (?i)^\Program Files \(x86\)\WinRAR\\.*exe$
 ```
+
+
+## Note on encrypted archives
+
+Encrypted archive decryption is still experimental.
+
+If you encounter any problem, please notify it to the authors via an issue.
+
+You can alternatively use the project [ORC-DECRYPT](https://github.com/DFIR-ORC/orc-decrypt) to manually pre-process this kind of archive.
+
+
 
 ### Note on use when processing large quantities of files
 

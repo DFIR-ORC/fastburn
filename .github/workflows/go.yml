@@ -41,6 +41,8 @@ jobs:
         run: go build -v -o ./${{ matrix.asset_name  }} ./cmd/fastburn
 
       - name: Test
+        env:
+            GODEBUG: x509sha1=1
         run: go test -v ./...
 
       - name: Upload Artifact

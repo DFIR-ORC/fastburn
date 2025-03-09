@@ -49,8 +49,12 @@ Detailed usage:
         Spécifier le nom du fichier de listage des ordinateurs
   -debug
         Activer le mode débogage
+  -info
+        Activer la traçabilité
   -html
         Activer la sortie HTML
+  -key
+        Spécifier une clé privée pour le traitement des archives chiffrées
   -output string
         Spécifier le fichier de sortie
   -stats string
@@ -82,6 +86,14 @@ Exemple d'exécution de la ligne de commande
 ```
 
 Voir aussi [Utilisation avancée](usage.md)
+
+### Attention
+
+Le support des archices chiffrées est encore expérimental.
+
+Alternativement, vous pouvez utiliser le projet [ORC-DECRYPT](https://github.com/DFIR-ORC/orc-decrypt) pour manuellement traiter ce type d'archives.
+
+
 
 ## License
 

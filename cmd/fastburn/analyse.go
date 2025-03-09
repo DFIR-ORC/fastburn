@@ -1,13 +1,16 @@
 package main
 
 /*
-Supporting functions for fastburn command line tool
-
-**/
+ * Supporting functions for fastburn command line tool
+ **/
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	fbn "fastburn/internal/fastfind"
 	"fastburn/internal/filter"
@@ -16,28 +19,109 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func fileNameWithoutExtension(fullPath string) string {
+	_, fileName := filepath.Split(fullPath)
+	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
+}
+
+func checkFileExists(filename string) (bool, error) {
+	if _, err := os.Stat(filename); err == nil {
+		return true, nil
+
+	} else if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+
+	} else {
+		return false, err
+
+	}
+}
+
+func decryptContainers(keyPath string, containers []string) (string, []string, error) {
+	dirTemp, err := os.MkdirTemp("", "fastburn-")
+	if err != nil {
+		log.Tracef("Failed to create temporary directory: %v", err)
+		return "", nil, err
+	}
+
+	var archives []string
+	log.Debugf("Decrypting containers with key '%s' in temp directory '%s'", keyPath, dirTemp)
+	for _, srcFile := range containers {
+		if keyPath != "" {
+			log.Debugf("====== Decrypted containers '%v'", archives)
+			// file name construction
+			fname := fileNameWithoutExtension(srcFile)
+			destFile := filepath.Join(dirTemp, fname)
+			// checking for collision
+			num := 1
+			exists, _ := checkFileExists(destFile)
+			for exists {
+				prefix := fmt.Sprintf("%d_%s", num, fname)
+				destFile = filepath.Join(dirTemp, prefix)
+				num += 1
+				exists, _ = checkFileExists(destFile)
+			}
+
+			log.Debugf("Processing encrypted container '%s' with key '%s' to '%s'", srcFile, keyPath, destFile)
+
+			// decrypting container
+			clearText, err := fbn.DecryptCMSData(keyPath, srcFile)
+			if err != nil {
+				log.Warnf("Container decryption failed: PKCS7 decryption of '%s' with key '%s' failed: %v", srcFile, keyPath, err)
+				continue
+			}
+
+			// unstreaming buffer
+			err = fbn.UnstreamBuffer(clearText, destFile)
+			if err != nil {
+				log.Warnf("Failed to decrypt container '%s': %v", srcFile, err)
+				continue
+			} else {
+				log.Debugf("SUCCESS decrypting container '%s' to '%s'", srcFile, destFile)
+				archives = append(archives, destFile)
+			}
+		} else {
+			log.Debugf("Skipping encrypted archive '%s' (no key provided)", srcFile)
+		}
+	}
+	return dirTemp, archives, nil
+}
+
 // parseFiles - process the command line to list files and parse them to the in-memory data structures
-func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFindComputersList, *fbn.FastFindMatchesStats, error) {
+func parseFiles(keypath string, args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFindComputersList, *fbn.FastFindMatchesStats, error) {
 
 	matches := make(fbn.FastFindMatchesList, 0)
 	computers := make(fbn.FastFindComputersList, 0)
 
 	stats := fbn.CreateStats()
 	log.Debugf("Processing file list: %v", args)
-	files, err := utils.ExpandArchiveFilePaths(utils.Uniq(args))
+	archives, containers, err := utils.ExpandArchiveFilePaths(utils.Uniq(args))
 	if err != nil {
 		log.Errorf("Failed to expand paths: %v", err)
 		return nil, nil, nil, nil, err
 	}
 
-	utils.PrintAndLog(log.InfoLevel, "%d files to process", len(files))
+	// decrypt containers in a temporary directory
+	tempDir, decryptedFiles, err := decryptContainers(keypath, containers)
+	if err != nil {
+		log.Errorf("Failed to decrypt containers: %v", err)
+		return nil, nil, nil, nil, err
+	}
+	defer os.RemoveAll(tempDir) // clean up when exiting function
+	archives = append(archives, decryptedFiles...)
+
+	log.Debugf("%d/%d containers decrypted : %v", len(decryptedFiles), len(containers), decryptedFiles)
+	log.Debugf("%d files to process files: %v", len(archives), archives)
+
+	// processing archive files
+	utils.PrintAndLog(log.InfoLevel, "%d files to process", len(archives))
 
 	fmt.Println()
 	rowfmt := "%-40s %-8s %s\n"
 	fmt.Printf(rowfmt, "Hostname", "Matches", "File")
 	fmt.Printf(rowfmt, "--------", "-------", "----")
 
-	for _, fname := range files {
+	for _, fname := range archives {
 		matches, computers, err = fbn.ProcessFile(fname, matches, computers)
 		if err != nil {
 			log.Warning("Failed to process '" + fname + "': " + err.Error())
@@ -52,7 +136,7 @@ func parseFiles(args []string) ([]string, *fbn.FastFindMatchesList, *fbn.FastFin
 
 	fmt.Println()
 
-	return files, &matches, &computers, stats, nil
+	return archives, &matches, &computers, stats, nil
 }
 
 // analyseData - process the collected data in memory

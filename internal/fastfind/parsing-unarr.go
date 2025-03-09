@@ -35,7 +35,7 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 	log.Debug("Processing " + fname)
 	archive, err := unarr.NewArchive(fname)
 	if err != nil {
-		log.Error("failed to open '" + fname + "' with :" + err.Error())
+		log.Errorf("Failed to open '%s' with error: %v", fname, err)
 		return matches, computers, err
 	}
 	defer archive.Close()
@@ -44,29 +44,28 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 	var mainLogFile string
 	files, err := archive.List()
 	if err != nil {
-		log.Error("failed to list '" + fname + "' content with :" + err.Error())
+		log.Errorf("Failed to list '%s' content with error : %v", fname, err)
 		return matches, computers, err
 	}
 	for _, e := range files {
-
 		log.Tracef("Archive content name: %s", e)
 		if e == "FastFind.log" {
 			mainLogFile = e
 		}
 	}
+	if mainLogFile == "" {
+		return matches, computers, fmt.Errorf("no FastFind.log in archive '%s'", fname)
+	}
 
 	////////// Process LogFile to determine ORC Version
 	mainLogContent, err := readFileContentFromArchiveUnarr(archive, mainLogFile)
 	if err != nil {
-		log.Errorf(
-			"Failed to decompress '%s' from archive '%s' with failed with :%v",
-			mainLogFile, fname, err)
+		log.Errorf("Failed to decompress log '%s' from archive '%s' with: %v", mainLogFile, fname, err)
 		return matches, computers, err
 	}
 	orcVersion, isModern, err := scanORCVersion(string(mainLogContent))
 	if err != nil {
-		log.Errorf(
-			"Failed to decompress '%v' from archive '%s' with failed with :%v", mainLogContent, fname, err)
+		log.Errorf("Failed to scan ORC Version from archive '%s' with error : %v", fname, err)
 		return matches, computers, err
 	}
 	log.Debugf("Orc version: %s (modern:%v)", orcVersion, isModern)
@@ -76,9 +75,7 @@ func ProcessFileUnarr(fname string, matches []*FastFindMatch, computers []*FastF
 	// decompress to in-memory buffer for result file
 	resultData, err := readFileContentFromArchiveUnarr(archive, resultsFname)
 	if err != nil {
-		log.Error(fmt.Sprintf(
-			"Failed to decompress '%s' from archive '%s' with failed with :%s",
-			resultsFname, fname, err.Error()))
+		log.Errorf("Failed to decompress results '%s' from archive '%s' with: %v", resultsFname, fname, err)
 		return matches, computers, err
 	}
 

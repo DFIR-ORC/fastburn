@@ -20,7 +20,7 @@ Au terme de l'exécution, plusieurs fichiesr CSV contenant le détail des donné
    ./fbn [-debug|-trace]
       [-whitelist <whitelist.csv>] [-blacklist <blacklist.csv>]
       [-output <output file>] [-computers <machine list file>]
-      [-timeline <timeline file>] [-html]
+      [-timeline <timeline file>] [-key <key path>] [-html]
       <files>
 ```
 
@@ -33,7 +33,7 @@ Au terme de l'exécution, plusieurs fichiesr CSV contenant le détail des donné
 **Note** Si un fichier n'est pas une archive valide, il est ignoré mais le traitement continue.
 
 #### Détail des options
-
+* `info`  active le premier niveau de traçabilité sur STDERR
 * `debug` active le second niveau de traçabilité sur STDERR
 * `trace` active le niveau maximal de traçabilité sur STDERR
 * `whitelist` permet de spécifier un fichier de marqueurs à mettre en évidence
@@ -42,9 +42,11 @@ Au terme de l'exécution, plusieurs fichiesr CSV contenant le détail des donné
 * `computers` permet de forcer le nom de fichier récapitulant la liste les machines trouvées dans les archives traitées
 * `timeline` permet de forcer le nom de fichier de la timeline
 * `html` active la sortie au format HTML
+* `key` permet de spécifier une clé privée pour déchiffrer les archives FastFind chiffrées
 
 Le format des fichiers de liste blanche et noire est le même. Il est documenté ci-dessous dans la section "Format de fichier de Flags".
 
+Le fichier de clé privée est attendu au format PKCS#8 encodé en BER et PEM.
 
 ### Exemple
 
@@ -237,6 +239,15 @@ Identifier les exécutables du répertoire d'installation de WinRAR indépendamm
 ```
 (?i)^\\Program Files \(x86\)\\WinRAR\\.*exe$
 ```
+
+### Note on encrypted archives
+
+Le support des archices chiffrées est encore expérimental.
+
+Si vous rencontrez quelque problème que ce soit, n'hésitez pas à le signaler aux auteurs par une "issue" sur le repository.
+
+Alternativement, vous pouvez utiliser le projet [ORC-DECRYPT](https://github.com/DFIR-ORC/orc-decrypt) pour manuellement traiter ce type d'archives.
+
 
 ### Note sur l'usage pour traiter des grandes quantités de fichiers
 

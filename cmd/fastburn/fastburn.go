@@ -68,12 +68,13 @@ func main() {
 	var computersFlag string
 	var statsFlag string
 	var timelineFlag string
+	var keyFlag string
 
 	flag.Usage = PrintUsage
 
-	infoFlag := flag.Bool("info", false, "Enable debug mode")
-	debugFlag := flag.Bool("debug", false, "Enable debug mode")
-	traceFlag := flag.Bool("trace", false, "Enable trace mode")
+	infoFlag := flag.Bool("info", false, "Enable info verbosity level")
+	debugFlag := flag.Bool("debug", false, "Enable debug verbosity level")
+	traceFlag := flag.Bool("trace", false, "Enable trace verbosity level")
 	versionFlag := flag.Bool("version", false, "Show version and exit")
 
 	flag.StringVar(&whiteFilename, "whitelist", "", "Specify a CSV file containing flags to highligth in the results")
@@ -82,6 +83,7 @@ func main() {
 	flag.StringVar(&computersFlag, "computers", "", "Specify computers listing filename")
 	flag.StringVar(&statsFlag, "stats", "", "Specify statistics filename")
 	flag.StringVar(&timelineFlag, "timeline", "", "Specify a filename for timeline output")
+	flag.StringVar(&keyFlag, "key", "", "Private key for decryption of encrypted archive filename")
 
 	htmlFlag := flag.Bool("html", false, "Generate an HTML output")
 
@@ -111,7 +113,7 @@ func main() {
 	}
 
 	// look for archives and parse them to memory
-	files, matches, computers, stats, err := parseFiles(args)
+	files, matches, computers, stats, err := parseFiles(keyFlag, args)
 	if err != nil {
 		log.Errorf("Failed to process files: %v", err)
 		os.Exit(1)

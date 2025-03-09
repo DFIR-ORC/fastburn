@@ -16,6 +16,7 @@ lint: ## Lint the files
 	go vet ${PKG_LIST}
 	staticcheck ${PKG_LIST}
 
+test: export GODEBUG=x509sha1=1
 test: ## Run unittests
 	go test -short ${PKG_LIST}
 
